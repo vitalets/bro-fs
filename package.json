@@ -6,8 +6,11 @@
     "name": "Vitaliy Potapov",
     "email": "noginsk@rambler.ru"
   },
+  "main": "src/index.js",
   "scripts": {
     "dev": "karma start",
+    "code": "npm run eslint",
+    "test": "karma start --single-run",
     "eslint": "eslint src test karma.conf.js"
   },
   "devDependencies": {
@@ -16,6 +19,7 @@
     "chai-shallow-deep-equal": "^1.4.4",
     "eslint": "^3.8.1",
     "eslint-plugin-mocha": "^4.7.0",
+    "ghooks": "^1.3.2",
     "karma": "^1.3.0",
     "karma-chai": "^0.1.0",
     "karma-chai-as-promised": "0.1.2",
@@ -27,6 +31,12 @@
     "karma-webpack": "^1.8.0",
     "mocha": "^3.1.2",
     "webpack": "^1.13.2"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run code",
+      "pre-push": "npm run code && npm test"
+    }
   },
   "license": "MIT"
 }
