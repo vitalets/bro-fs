@@ -1,7 +1,14 @@
 /**
  * Promise-based HTML5 Filesystem API compatible with Node.js fs module.
+ * Current specs:
+ * - https://dev.w3.org/2009/dap/file-system/file-dir-sys.html (Chrome)
+ * - https://wicg.github.io/entries-api/ (Firefox and EDGE)
  *
- * Someday browsers will implement W3C filesystem: https://w3c.github.io/filesystem-api/
+ * Coming W3C spec draft:
+ * https://w3c.github.io/filesystem-api/
+ *
+ * Discussion:
+ * https://github.com/w3c/filesystem-api/issues/8
  *
  * HTML5 Rocks article:
  * https://www.html5rocks.com/en/tutorials/file/filesystem/
@@ -74,12 +81,30 @@ exports.unlink = function (path) {
     .then(file => promiseCall(file, 'remove'));
 };
 
-exports.rename = function (oldPath, newPath) {
-
+/**
+ * Renames file or directory
+ *
+ * @param {String} oldPath
+ * @param {String} newPath
+ * @param {Object} [options]
+ * @param {Boolean} [options.create] create missing directories
+ * @returns {Promise<String>}
+ */
+exports.rename = function (oldPath, newPath, options = {}) {
+  return moveOrCopy(oldPath, newPath, 'moveTo', options);
 };
 
-exports.copy = function (oldPath, newPath) {
-
+/**
+ * Copies file or directory
+ *
+ * @param {String} oldPath
+ * @param {String} newPath
+ * @param {Object} [options]
+ * @param {Boolean} [options.create] create missing directories
+ * @returns {Promise<String>}
+ */
+exports.copy = function (oldPath, newPath, options = {}) {
+  return moveOrCopy(oldPath, newPath, 'copyTo', options);
 };
 
 exports.rmdir = function (path) {
@@ -94,12 +119,13 @@ exports.mkdir = function (path) {
   return getDir(path, {create: true});
 };
 
+exports.exists = function (path) {
+  return getFileOrDir(path)
+    .then(() => true, e => isNotFoundError(e) ? false : Promise.reject(e));
+};
+
 exports.stat = function (path) {
-  return getDir(path)
-    .then(getStat, e => isTypeMismatchError(e)
-      ? getFile(path).then(getStat)
-      : Promise.reject(e)
-    )
+  return getFileOrDir(path).then(getStat);
 };
 
 exports.readdir = function (path) {
@@ -170,6 +196,11 @@ function getFile(path, options = {}) {
         return getChildFile(dir, fileName);
       }
     });
+}
+
+function getFileOrDir(path) {
+  return getFile(path)
+    .catch(e => isTypeMismatchError(e) ? getDir(path) : Promise.reject(e));
 }
 
 function createChildDir(parent, dirName) {
@@ -271,4 +302,17 @@ function getStat(entry) {
         size: metadata.size,
       };
     })
+}
+
+function moveOrCopy(oldPath, newPath, method, options) {
+  if (oldPath === newPath) {
+    return Promise.resolve();
+  }
+  const {dirPath: newParentDirPath, fileName: newName} = parsePath(newPath);
+  return Promise.all([
+    getFileOrDir(oldPath),
+    getDir(newParentDirPath, options)
+  ]).then(([enrty, newParent]) => {
+    return promiseCall(enrty, method, newParent, newName);
+  });
 }

@@ -1,8 +1,6 @@
 
 const fs = require('../src');
 
-chai.config.truncateThreshold = 0;
-
 describe('fs', function () {
 
   before(function () {
@@ -104,7 +102,7 @@ describe('fs', function () {
       .then(() => assert.eventually.lengthOf(fs.readdir('/'), 0))
   });
 
-  it('stat (directory)', function() {
+  it('stat (dir)', function() {
     return Promise.resolve()
       .then(() => fs.mkdir('a'))
       .then(() => fs.stat('a'))
@@ -128,6 +126,79 @@ describe('fs', function () {
         fullPath: '/a.txt',
         size: 3,
       }))
+  });
+
+  it('stat (missing)', function() {
+    return Promise.resolve()
+      .then(() => fs.stat('a.txt'))
+      .should.be.rejected.and.eventually.have.property(
+        'message',
+        'A requested file or directory could not be found at the time an operation was processed.'
+      )
+  });
+
+  it('exists (file)', function() {
+    return Promise.resolve()
+      .then(() => assert.eventually.notOk(fs.exists('a.txt')))
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(() => assert.eventually.ok(fs.exists('a.txt')))
+  });
+
+  it('exists (dir)', function() {
+    return Promise.resolve()
+      .then(() => assert.eventually.notOk(fs.exists('a')))
+      .then(() => fs.mkdir('a'))
+      .then(() => assert.eventually.ok(fs.exists('a')))
+  });
+
+  it('rename (file in the same dir)', function() {
+    return Promise.resolve()
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(() => fs.rename('a.txt', 'b.txt'))
+      .then(() => assert.eventually.equal(fs.readFile('b.txt'), 'abc'))
+  });
+
+  it('rename (move to another dir)', function() {
+    return Promise.resolve()
+      .then(() => fs.mkdir('b'))
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(() => fs.rename('a.txt', 'b/a.txt'))
+      .then(() => assert.eventually.equal(fs.readFile('b/a.txt'), 'abc'))
+  });
+
+  it('rename (dir)', function() {
+    return Promise.resolve()
+      .then(() => fs.mkdir('a'))
+      .then(() => fs.rename('a', 'b'))
+      .then(() => assert.eventually.notOk(fs.exists('a')))
+      .then(() => assert.eventually.ok(fs.exists('b')))
+  });
+
+  it('copy (file in the same dir)', function() {
+    return Promise.resolve()
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(() => fs.copy('a.txt', 'b.txt'))
+      .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'abc'))
+      .then(() => assert.eventually.equal(fs.readFile('b.txt'), 'abc'))
+  });
+
+  it('copy (move to another dir)', function() {
+    return Promise.resolve()
+      .then(() => fs.mkdir('b'))
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(() => fs.copy('a.txt', 'b/a.txt'))
+      .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'abc'))
+      .then(() => assert.eventually.equal(fs.readFile('b/a.txt'), 'abc'))
+  });
+
+  it('copy (dir)', function() {
+    return Promise.resolve()
+      .then(() => fs.mkdir('a'))
+      .then(() => fs.writeFile('a/a.txt', 'abc'))
+      .then(() => fs.copy('a', 'b'))
+      .then(() => assert.eventually.ok(fs.exists('a')))
+      .then(() => assert.eventually.ok(fs.exists('b')))
+      .then(() => assert.eventually.equal(fs.readFile('b/a.txt'), 'abc'))
   });
 
 });

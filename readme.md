@@ -9,3 +9,4 @@ Promise-based HTML5 Filesystem API compatible with []Node.js fs module](https://
 * https://www.npmjs.com/package/fs-web - store in IndexedDB
 * https://github.com/mafintosh/browserify-fs - uses leveldb under hood, callbacks
 * https://github.com/CrabDude/fs-browserify - unsupported, 2012
+* https://www.npmjs.com/package/dom-fs - unsupported
