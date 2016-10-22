@@ -183,6 +183,8 @@ exports.clear = function () {
 
 /**
  * Gets URL for path
+ *
+ * @param {String} path
  */
 exports.getUrl = function (path) {
   return getFileOrDir(path)
