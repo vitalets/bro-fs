@@ -1,0 +1,14 @@
+{
+  "extends": "eslint:recommended",
+
+  "ecmaFeatures": {
+    "modules": true,
+    "impliedStrict": true
+  },
+
+  "env": {
+    "es6": true,
+    "browser": true,
+    "commonjs": true
+  }
+}

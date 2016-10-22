@@ -1,0 +1,15 @@
+{
+  "env": {
+    "mocha": true
+  },
+  "globals": {
+    "fs": false,
+    "assert": false
+  },
+  "plugins": [
+    "mocha"
+  ],
+  "rules": {
+    "mocha/no-exclusive-tests": "error"
+  }
+}
