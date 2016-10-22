@@ -1,11 +1,18 @@
 module.exports = function (config) {
   config.set({
-    browsers: ['ChromeUnlimitedStorage'],
+    browsers: [
+      'ChromeUnlimitedStorage',
+      'ChromeCanaryUnlimitedStorage'
+    ],
     customLaunchers: {
       ChromeUnlimitedStorage: {
         base: 'Chrome',
         flags: ['--unlimited-storage']
-      }
+      },
+      ChromeCanaryUnlimitedStorage: {
+        base: 'ChromeCanary',
+        flags: ['--unlimited-storage']
+      },
     },
     frameworks: ['mocha', 'chai-as-promised', 'chai-shallow-deep-equal', 'chai'],
     // reporters: ['mocha'],
