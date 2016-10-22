@@ -181,6 +181,14 @@ exports.clear = function () {
     });
 };
 
+/**
+ * Gets URL for path
+ */
+exports.getUrl = function (path) {
+  return getFileOrDir(path)
+    .then(entry => entry.toURL())
+};
+
 function getFileOrDir(path) {
   return file.get(path)
     .catch(e => errors.isTypeMismatchError(e)
