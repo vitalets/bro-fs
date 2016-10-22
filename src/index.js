@@ -155,12 +155,16 @@ exports.stat = function (path) {
  * Reads directory content
  *
  * @param {String} path
+ * @param {Object} [options]
+ * @param {Boolean} [options.deep]
  * @returns {Promise<Array>}
  */
-exports.readdir = function (path) {
+exports.readdir = function (path, options = {}) {
   return directory.get(path)
-    .then(dir => utils.promiseCall(dir.createReader(), 'readEntries'))
-    .then(entries => entries.sort(entry => entry.name));
+    .then(dir => options.deep
+      ? directory.readDeep(dir)
+      : directory.read(dir)
+    )
 };
 
 /**

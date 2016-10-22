@@ -7,12 +7,11 @@ describe('readdir', function () {
       .then(() => fs.mkdir('a/b'))
       .then(() => fs.writeFile('a.txt', 'abc'))
       .then(() => fs.readdir('/'))
-      .then(entries => {
-        assert.lengthOf(entries, 3);
-        assert.equal(entries[0].name, 'c');
-        assert.equal(entries[1].name, 'a.txt');
-        assert.equal(entries[2].name, 'a');
-      });
+      .then(entries => assert.shallowDeepEqual(entries, [
+        {name: 'c'},
+        {name: 'a.txt'},
+        {name: 'a'},
+      ]));
   });
 
   it('should return array of dir entries (subdir)', function() {
@@ -38,6 +37,24 @@ describe('readdir', function () {
     return Promise.resolve()
       .then(() => fs.readdir('a'))
       .catch(e => assert.notFound(e))
+  });
+
+  it('should return all entries with deep option', function() {
+    return Promise.resolve()
+      .then(() => fs.mkdir('c'))
+      .then(() => fs.mkdir('a/b'))
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(() => fs.writeFile('a/b/c.txt', 'abc'))
+      .then(() => fs.readdir('/', {deep: true}))
+      .then(entries => assert.shallowDeepEqual(entries, [
+        {name: 'c', children: []},
+        {name: 'a.txt'},
+        {name: 'a', children: [
+          {name: 'b', children: [
+            {name: 'c.txt'},
+          ]},
+        ]},
+      ]));
   });
 
 });

@@ -30,6 +30,37 @@ exports.get = function (path, options = {}) {
   }, Promise.resolve(root.get()));
 };
 
+/**
+ * Reads dir entries
+ *
+ * @param {Object} dir
+ */
+exports.read = function (dir) {
+  return utils.promiseCall(dir.createReader(), 'readEntries')
+    .then(entries => entries.sort(entry => entry.name));
+};
+
+/**
+ * Reads dir entries deeply
+ *
+ * @param {Object} dir
+ * @returns {Promise<Array>}
+ */
+exports.readDeep = function (dir) {
+  return exports.read(dir)
+    .then(entries => {
+      const tasks = entries.map(entry => {
+        if (entry.isDirectory) {
+          return exports.readDeep(entry)
+            .then(subEntries => Object.assign(entry, {children: subEntries}))
+        } else {
+          return Promise.resolve(entry);
+        }
+      });
+      return Promise.all(tasks);
+    });
+};
+
 function createChildDir(parent, dirName) {
   return utils.promiseCall(parent, 'getDirectory', dirName, {create: true, exclusive: true});
 }
