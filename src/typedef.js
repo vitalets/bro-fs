@@ -17,4 +17,13 @@
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry}
  */
 
-
+/**
+ * @name StatObject
+ * @typedef StatObject
+ * @property {Boolean} isFile
+ * @property {Boolean} isDirectory
+ * @property {String} name
+ * @property {String} fullPath
+ * @property {Date} modificationTime
+ * @property {Number} size
+ */

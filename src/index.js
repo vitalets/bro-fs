@@ -18,7 +18,7 @@ const quota = require('./quota');
  * @param {Number} [options.type=window.PERSISTENT] window.PERSISTENT | window.TEMPORARY
  * @param {Number} [options.bytes=0]
  * @param {Boolean} [options.requestQuota=true] show request quota popup
- * (not needed for extensions with unlimitedStorage permission)
+ * (not needed for extensions with `unlimitedStorage` permission)
  * @returns {Promise}
  */
 exports.init = function (options = {}) {
@@ -83,8 +83,8 @@ exports.unlink = function (path) {
  * @param {String} oldPath
  * @param {String} newPath
  * @param {Object} [options]
- * @param {Boolean} [options.create] create missing directories
- * @returns {Promise}
+ * @param {Boolean} [options.create=false] create missing directories
+ * @returns {Promise<FileSystemFileEntry>}
  */
 exports.rename = function (oldPath, newPath, options = {}) {
   return moveOrCopy(oldPath, newPath, 'moveTo', options);
@@ -96,8 +96,8 @@ exports.rename = function (oldPath, newPath, options = {}) {
  * @param {String} oldPath
  * @param {String} newPath
  * @param {Object} [options]
- * @param {Boolean} [options.create] create missing directories
- * @returns {Promise}
+ * @param {Boolean} [options.create=false] create missing directories
+ * @returns {Promise<FileSystemFileEntry>}
  */
 exports.copy = function (oldPath, newPath, options = {}) {
   return moveOrCopy(oldPath, newPath, 'copyTo', options);
@@ -145,7 +145,7 @@ exports.exists = function (path) {
  * Gets info about file or directory
  *
  * @param {String} path
- * @returns {Promise<Object>}
+ * @returns {Promise<StatObject>}
  */
 exports.stat = function (path) {
   return getFileOrDir(path)
@@ -157,8 +157,8 @@ exports.stat = function (path) {
  *
  * @param {String} path
  * @param {Object} [options]
- * @param {Boolean} [options.deep]
- * @returns {Promise<Array>}
+ * @param {Boolean} [options.deep=false] read recursively and attach data as `children` property
+ * @returns {Promise<Array<FileSystemEntry>>}
  */
 exports.readdir = function (path, options = {}) {
   return directory.get(path)
@@ -170,6 +170,7 @@ exports.readdir = function (path, options = {}) {
 
 /**
  * Clears whole filesystem
+ * @returns {Promise}
  */
 exports.clear = function () {
   return exports.readdir('/')
@@ -186,6 +187,7 @@ exports.clear = function () {
  * Gets URL for path
  *
  * @param {String} path
+ * @returns {String}
  */
 exports.getUrl = function (path) {
   return getFileOrDir(path)
