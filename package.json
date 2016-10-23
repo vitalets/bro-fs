@@ -1,6 +1,6 @@
 {
   "name": "bro-fs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Promise-based HTML5 Filesystem API compatible with Node.js fs module",
   "author": {
     "name": "Vitaliy Potapov",
