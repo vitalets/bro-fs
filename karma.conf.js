@@ -1,9 +1,11 @@
 module.exports = function (config) {
   config.set({
     browsers: [
-      'ChromeUnlimitedStorage',
-      'ChromeCanaryUnlimitedStorage'
+      'Chrome',
+      'ChromeCanary'
     ],
+    // todo: run with sheeva in different env
+    /*
     customLaunchers: {
       ChromeUnlimitedStorage: {
         base: 'Chrome',
@@ -14,8 +16,8 @@ module.exports = function (config) {
         flags: ['--unlimited-storage']
       },
     },
+    */
     frameworks: ['mocha', 'chai-as-promised', 'chai-shallow-deep-equal', 'chai'],
-    // reporters: ['mocha'],
     files: ['test/**'],
     preprocessors: {
       'test/**': ['webpack', 'sourcemap']

@@ -57,7 +57,8 @@ exports.write = function (fileEntry, data, options = {}) {
         const blob = new Blob([data], {type: 'text/plain'});
         fileWriter.write(blob);
       });
-    });
+    })
+    .then(() => fileEntry)
 };
 
 /**

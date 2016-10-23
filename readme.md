@@ -24,7 +24,8 @@ Discussion:
  
 ## Similar packages
 * [filer.js](https://www.npmjs.com/package/filer.js) - unix-like commands, callbacks
-* [html5-fs](https://github.com/evanshortiss/html5-fs) - not maintained, callbacks
+* [html5-fs](https://github.com/evanshortiss/html5-fs) - looks obsolete, callbacks
+* [chromestore.js](https://github.com/summera/chromestore.js) - looks obsolete, callbacks
 * [BrowserFS](https://github.com/jvilk/BrowserFS) - many backends, callbacks
 * [fs-web](https://www.npmjs.com/package/fs-web) - store files in IndexedDB, not html5 filesystem
 * [web-fs](https://github.com/mmckegg/web-fs) - abanboned

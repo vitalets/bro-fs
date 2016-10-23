@@ -3,6 +3,7 @@
  */
 
 let root = null;
+let type = null;
 
 exports.get = function () {
   if (!root) {
@@ -12,6 +13,11 @@ exports.get = function () {
   }
 };
 
-exports.set = function (newRoot) {
+exports.set = function (newRoot, newType) {
   root = newRoot;
+  type = newType;
+};
+
+exports.getType = function () {
+  return type;
 };

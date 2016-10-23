@@ -3,6 +3,7 @@ describe('read/write/append file', function () {
   it('should write new file and read content', function() {
     return Promise.resolve()
       .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(res => assert.equal(res.toString(), '[object FileEntry]'))
       .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'abc'))
   });
 
@@ -25,6 +26,7 @@ describe('read/write/append file', function () {
   it('should append to new file', function() {
     return Promise.resolve()
       .then(() => fs.appendFile('a.txt', 'def'))
+      .then(res => assert.equal(res.toString(), '[object FileEntry]'))
       .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'def'))
   });
 

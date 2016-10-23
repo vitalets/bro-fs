@@ -6,7 +6,7 @@ describe('url', function () {
       .then(() => fs.getUrl('a.txt'))
       .then(url => {
         assert.match(url, /^filesystem:http:/);
-        assert.match(url, /\/persistent\/a\.txt$/);
+        assert.match(url, /\/temporary\/a\.txt$/);
       })
   });
 
@@ -16,7 +16,7 @@ describe('url', function () {
       .then(() => fs.getUrl('a/b'))
       .then(url => {
         assert.match(url, /^filesystem:http:/);
-        assert.match(url, /\/persistent\/a\/b$/);
+        assert.match(url, /\/temporary\/a\/b$/);
       })
   });
 
@@ -25,7 +25,7 @@ describe('url', function () {
       .then(() => fs.getUrl())
       .then(url => {
         assert.match(url, /^filesystem:http:/);
-        assert.match(url, /\/persistent\/$/);
+        assert.match(url, /\/temporary\/$/);
       })
   });
 

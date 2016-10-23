@@ -2,7 +2,7 @@ module.exports = {
   entry: './src',
   output: {
     path: 'dist',
-    filename: 'index.js',
+    filename: 'bro-fs.js',
     libraryTarget: 'umd',
     library: 'fs',
   }

@@ -12,23 +12,57 @@ const stat = require('./stat');
 const quota = require('./quota');
 
 /**
+ * Is filesystem API supported
+ *
+ * @returns {Boolean}
+ */
+exports.isSupported = function () {
+  return Boolean(window.webkitRequestFileSystem);
+};
+
+/**
  * Init filesystem
  *
  * @param {Object} [options]
  * @param {Number} [options.type=window.PERSISTENT] window.PERSISTENT | window.TEMPORARY
- * @param {Number} [options.bytes=0]
+ * @param {Number} [options.bytes=1Mb]
  * @param {Boolean} [options.requestQuota=true] show request quota popup
  * (not needed for extensions with `unlimitedStorage` permission)
  * @returns {Promise}
  */
 exports.init = function (options = {}) {
-  const type = options.type || window.PERSISTENT;
-  const bytes = options.bytes || 0;
-  const requestQuota = options.requestQuota === undefined ? true : options.requestQuota;
+  const type = options.hasOwnProperty('type') ? options.type : window.PERSISTENT;
+  const bytes = options.bytes || 1024 * 1024;
+  assertType(type);
+  const requestQuota = type === window.PERSISTENT
+    ? (options.requestQuota === undefined ? true : options.requestQuota)
+    : false;
   return Promise.resolve()
-    .then(() => requestQuota ? quota.request({type, bytes}) : bytes)
+    .then(() => requestQuota ? quota.requestPersistent(bytes) : bytes)
+    // webkitRequestFileSystem always returns fs even if quota not granted
     .then(grantedBytes => utils.promiseCall(window, 'webkitRequestFileSystem', type, grantedBytes))
-    .then(fs => root.set(fs.root));
+    .then(fs => {
+      root.set(fs.root, type);
+      return fs;
+    });
+};
+
+/**
+ * Gets used and granted bytes
+ *
+ * @returns {Promise<{usedBytes, grantedBytes}>}
+ */
+exports.usage = function () {
+  return quota.usage(root.getType());
+};
+
+/**
+ * Returns root directory
+ *
+ * @returns {FileSystemDirectoryEntry}
+ */
+exports.getRoot = function () {
+  return root.get();
 };
 
 /**
@@ -216,4 +250,10 @@ function moveOrCopy(oldPath, newPath, method, options) {
   ]).then(([enrty, newParent]) => {
     return utils.promiseCall(enrty, method, newParent, newName);
   });
+}
+
+function assertType(type) {
+  if (type !== window.PERSISTENT && type !== window.TEMPORARY) {
+    throw new Error(`Unknown storage type ${type}`);
+  }
 }

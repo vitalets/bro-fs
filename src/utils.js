@@ -3,6 +3,9 @@
  */
 
 exports.promiseCall = function (obj, method) {
+  if (!obj) {
+    throw new Error(`Can't call promisified method '${method}' of ${obj}`);
+  }
   const args = [].slice.call(arguments, 2);
   return new Promise((resolve, reject) => {
     args.push(resolve, reject);

@@ -2,7 +2,7 @@
 const fs = window.fs = require('../src');
 
 before(function () {
-  return fs.init({requestQuota: false});
+  return fs.init({type: window.TEMPORARY});
 });
 
 beforeEach(function () {
