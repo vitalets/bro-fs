@@ -23,7 +23,14 @@
             Select files and folders in left-side tree view, edit them, create or delete.
         </p>
     </div>
-    <div class="row">
+    <div class="row alert-row" style="display: none">
+        <div class="col-md-12">
+        <div class="alert alert-warning" role="alert">
+            Your browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_and_Directory_Entries_API">HTML5 Filesystem API</a>
+        </div>
+        </div>
+    </div>
+    <div class="row main-row">
         <div class="col-md-4">
             <div id="tree"></div>
             <div style="text-align: center">
@@ -59,7 +66,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12" style="text-align: center; margin-top: 15px; border-top: 1px solid #eee; padding: 10px">
+        <div class="col-md-12" style="text-align: center; margin-top: 15px">
+            <hr>
             <a href="#">Documentation</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#">GitHub</a>
         </div>
     </div>

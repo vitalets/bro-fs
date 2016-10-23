@@ -3,7 +3,8 @@ main();
 
 function main() {
   if (!fs.isSupported()) {
-    // show message
+    $('.main-row').hide();
+    $('.alert-row').show();
   } else {
     addListeners();
     fs.init({type: window.TEMPORARY})
