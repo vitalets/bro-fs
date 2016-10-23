@@ -37,7 +37,6 @@ exports.get = function (path, options = {}) {
  */
 exports.read = function (dir) {
   return utils.promiseCall(dir.createReader(), 'readEntries')
-    .then(entries => entries.sort(entry => entry.name));
 };
 
 /**
