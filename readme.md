@@ -9,10 +9,32 @@ Currently it is supported [only in Chrome](https://developer.mozilla.org/en-US/d
 * [Documentaion](https://vitalets.github.io/bro-fs/)
 
 ## Install
+```bash
+npm install bro-fs --save
+```
+or download manually [latest release]().
 
 ## Usage
+Webpack/browserify:
+```js
+const fs = require('bro-fs');
 
-## Documentation
+fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024})
+  .then(() => fs.mkdir('dir'))
+  .then(() => fs.writeFile('file.txt', 'hello world'))
+
+```
+Script tag:
+```html
+<script src="node_modules/bro-fs/dist/bro-fs.js"></script>
+<script>
+    fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024})
+      .then(() => fs.mkdir('dir'))
+      .then(() => fs.writeFile('file.txt', 'hello world'))
+</script>
+```
+
+See more usage examples in [test directory](/test).
 
 ## W3C Specs
 Current:  
