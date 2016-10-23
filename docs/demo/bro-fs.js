@@ -82,8 +82,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {Object} [options]
 	 * @param {Number} [options.type=window.PERSISTENT] window.PERSISTENT | window.TEMPORARY
 	 * @param {Number} [options.bytes=1Mb]
-	 * @param {Boolean} [options.requestQuota=true] show request quota popup
-	 * (not needed for extensions with `unlimitedStorage` permission)
+	 * @param {Boolean} [options.requestQuota=true] show request quota popup for PERSISTENT type.
+	 * (`false` for Chrome extensions with `unlimitedStorage` permission)
 	 * @returns {Promise}
 	 */
 	exports.init = function (options = {}) {
@@ -533,7 +533,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	exports.read = function (dir) {
 	  return utils.promiseCall(dir.createReader(), 'readEntries')
-	    .then(entries => entries.sort(entry => entry.name));
 	};
 
 	/**
