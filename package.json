@@ -6,15 +6,25 @@
     "name": "Vitaliy Potapov",
     "email": "noginsk@rambler.ru"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vitalets/bro-fs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vitalets/bro-fs/issues"
+  },
   "main": "src/index.js",
   "scripts": {
     "dev": "karma start",
     "code": "npm run eslint",
     "test": "karma start --single-run",
     "docs": "rimraf 'docs/!(demo)' && jsdoc -c ./jsdoc.json",
-    "webpack": "webpack",
+    "build": "webpack",
     "eslint": "eslint src test karma.conf.js",
-    "update-demo": "npm run webpack && cp dist/bro-fs.js docs/demo/bro-fs.js"
+    "update-demo": "cp dist/bro-fs.js docs/demo/bro-fs.js",
+    "preversion": "npm run code && npm test && npm run build && npm run docs && npm run update-demo",
+    "release-patch": "npm version patch",
+    "postversion": "npm publish && git push --follow-tags --no-verify"
   },
   "devDependencies": {
     "chai": "^3.5.0",
