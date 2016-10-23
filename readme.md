@@ -3,6 +3,14 @@ Promise-based [HTML5 Filesystem API](https://dev.w3.org/2009/dap/file-system/fil
 allowing to work with sandboxed filesystem in browser.  
 API is similar to [Node.js fs module](https://nodejs.org/api/fs.html) with some extra sugar.
 
+## Demo
+
+## Install
+
+## Usage
+
+## Documentation
+
 ## W3C Specs
 Current:  
  * [https://dev.w3.org/2009/dap/file-system/file-dir-sys.html](https://dev.w3.org/2009/dap/file-system/file-dir-sys.html) (Chrome)
