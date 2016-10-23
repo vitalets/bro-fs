@@ -12,6 +12,7 @@
     "code": "npm run eslint",
     "test": "karma start --single-run",
     "docs": "rimraf 'docs/!(demo)' && jsdoc -c ./jsdoc.json",
+    "webpack": "webpack",
     "eslint": "eslint src test karma.conf.js"
   },
   "devDependencies": {
