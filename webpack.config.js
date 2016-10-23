@@ -1,3 +1,7 @@
+
+const webpack = require('webpack');
+const packageJson = require('./package');
+
 module.exports = {
   entry: './src',
   output: {
@@ -5,5 +9,8 @@ module.exports = {
     filename: 'bro-fs.js',
     libraryTarget: 'umd',
     library: 'fs',
-  }
+  },
+  plugins: [
+    new webpack.BannerPlugin(`bro-fs v${packageJson.version}`)
+  ]
 };
