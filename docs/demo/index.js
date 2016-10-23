@@ -10,7 +10,8 @@ function main() {
       .then(() => fs.clear())
       .then(() => fs.readdir('/', {deep: true}))
       .then(entries => !entries.length ? createInitialStructure() : entries)
-      .then(entries => updateTree(null, entries));
+      .then(entries => updateTree(null, entries))
+      .then(() => $('#link-raw-fs').prop('href', fs.getRoot().toURL()));
   }
 }
 
@@ -61,10 +62,12 @@ function onSelected(event, node) {
 
   if (node.entry.isFile) {
     $('#filename').val(node.text);
+    fileForm.find('.direct-link').prop('href', node.entry.toURL());
     fs.readFile(node.entry.fullPath)
       .then(content => $('#content').val(content));
   } else {
     $('#dirname').val(node.text);
+    dirForm.find('.direct-link').prop('href', node.entry.toURL());
     dirForm.find('#dirname, .save, .delete').prop('disabled', node.entry === fs.getRoot());
   }
 }
