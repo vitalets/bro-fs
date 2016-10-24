@@ -1,4 +1,4 @@
-/*! bro-fs v0.1.2 */
+/*! bro-fs v0.1.4 */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -167,7 +167,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	exports.unlink = function (path) {
 	  return file.get(path)
-	    .then(fileEntry => utils.promiseCall(fileEntry, 'remove'));
+	    .then(
+	      fileEntry => utils.promiseCall(fileEntry, 'remove'),
+	      e => errors.isNotFoundError(e)
+	        ? Promise.resolve()
+	        : Promise.reject(e)
+	    );
 	};
 
 	/**
@@ -204,9 +209,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	exports.rmdir = function (path) {
 	  return directory.get(path)
-	    .then(dir => dir === root.get()
-	      ? Promise.reject('Can not rmdir root. Use clear() to clear fs.')
-	      : utils.promiseCall(dir, 'removeRecursively')
+	    .then(
+	      dir => dir === root.get()
+	        ? Promise.reject('Can not rmdir root. Use clear() to clear fs.')
+	        : utils.promiseCall(dir, 'removeRecursively'),
+	      e => errors.isNotFoundError(e)
+	        ? Promise.resolve()
+	        : Promise.reject(e)
 	    )
 	};
 
@@ -332,8 +341,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  const args = [].slice.call(arguments, 2);
 	  return new Promise((resolve, reject) => {
-	    args.push(resolve, reject);
-	    return obj[method].apply(obj, args);
+	    // create error before call to capture stack
+	    const errback = getErrback(new Error(), method, args, reject);
+	    const fullArgs = args.concat([resolve, errback]);
+	    return obj[method].apply(obj, fullArgs);
 	  });
 	};
 
@@ -351,6 +362,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  return path.split('/').filter(Boolean);
 	};
+
+	/**
+	 * Convert DOMException to regular error to have normal stack trace
+	 * Also add some details to error message
+	 */
+	function getErrback(err, method, args, reject) {
+	  return function (e) {
+	    let argsStr = '';
+	    try {
+	      argsStr = JSON.stringify(args);
+	    } catch (ex) {
+	      argsStr = args.join(', ');
+	    }
+	    err.name = e.name;
+	    err.message = `${e.message} Call: ${method}(${argsStr})`;
+	    reject(err);
+	  };
+	}
 
 
 /***/ },
