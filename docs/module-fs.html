@@ -162,7 +162,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line98">line 98</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line100">line 100</a>
     </li></ul></dd>
     
 
@@ -270,6 +270,15 @@
             
                 
 <span class="param-type">String</span>
+|
+
+<span class="param-type">Blob</span>
+|
+
+<span class="param-type">File</span>
+|
+
+<span class="param-type">ArrayBuffer</span>
 
 
             
@@ -336,7 +345,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line209">line 209</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line211">line 211</a>
     </li></ul></dd>
     
 
@@ -438,7 +447,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line136">line 136</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line138">line 138</a>
     </li></ul></dd>
     
 
@@ -732,7 +741,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line170">line 170</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line172">line 172</a>
     </li></ul></dd>
     
 
@@ -985,7 +994,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line226">line 226</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line228">line 228</a>
     </li></ul></dd>
     
 
@@ -1549,7 +1558,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line160">line 160</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line162">line 162</a>
     </li></ul></dd>
     
 
@@ -1700,7 +1709,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line197">line 197</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line199">line 199</a>
     </li></ul></dd>
     
 
@@ -1951,7 +1960,7 @@
 
     
 
-    <h4 class="name" id=".readFile"><span class="type-signature">(static) </span>readFile<span class="signature">(path)</span><span class="type-signature"> &rarr; {Promise.&lt;String>}</span></h4>
+    <h4 class="name" id=".readFile"><span class="type-signature">(static) </span>readFile<span class="signature">(path, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;String>}</span></h4>
 
     
 
@@ -1963,7 +1972,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line74">line 74</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line76">line 76</a>
     </li></ul></dd>
     
 
@@ -2029,6 +2038,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -2054,10 +2065,120 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
             <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'Text'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>how content should be read: Text|ArrayBuffer|BinaryString|DataURL</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -2114,7 +2235,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line123">line 123</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line125">line 125</a>
     </li></ul></dd>
     
 
@@ -2408,7 +2529,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line146">line 146</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -2559,7 +2680,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line184">line 184</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line186">line 186</a>
     </li></ul></dd>
     
 
@@ -2710,7 +2831,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line109">line 109</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line111">line 111</a>
     </li></ul></dd>
     
 
@@ -2963,7 +3084,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line86">line 86</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line88">line 88</a>
     </li></ul></dd>
     
 
@@ -3071,6 +3192,15 @@
             
                 
 <span class="param-type">String</span>
+|
+
+<span class="param-type">Blob</span>
+|
+
+<span class="param-type">File</span>
+|
+
+<span class="param-type">ArrayBuffer</span>
 
 
             

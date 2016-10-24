@@ -126,18 +126,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Reads file content
 	 *
 	 * @param {String} path
+	 * @param {Object} [options]
+	 * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL
 	 * @returns {Promise<String>}
 	 */
-	exports.readFile = function (path) {
+	exports.readFile = function (path, options = {}) {
 	  return file.get(path)
-	    .then(fileEntry => file.read(fileEntry));
+	    .then(fileEntry => file.read(fileEntry, options));
 	};
 
 	/**
 	 * Writes data to file
 	 *
 	 * @param {String} path
-	 * @param {String} data
+	 * @param {String|Blob|File|ArrayBuffer} data
 	 * @returns {Promise}
 	 */
 	exports.writeFile = function (path, data) {
@@ -149,7 +151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Appends data to file
 	 *
 	 * @param {String} path
-	 * @param {String} data
+	 * @param {String|Blob|File|ArrayBuffer} data
 	 * @returns {Promise}
 	 */
 	exports.appendFile = function (path, data) {
@@ -446,6 +448,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {String} data
 	 * @param {Object} [options]
 	 * @param {Boolean} [options.append]
+	 * @param {String} [options.type] mimetype
 	 * @returns {Promise}
 	 */
 	exports.write = function (fileEntry, data, options = {}) {
@@ -454,10 +457,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return new Promise((resolve, reject) => {
 	        if (options.append) {
 	          fileWriter.seek(fileWriter.length);
+	          fileWriter.onwriteend = resolve;
+	        } else {
+	          let truncated = false;
+	          fileWriter.onwriteend = function () {
+	            if (!truncated) {
+	              truncated = true;
+	              this.truncate(this.position);
+	            } else {
+	              resolve();
+	            }
+	          };
 	        }
-	        fileWriter.onwriteend = resolve;
 	        fileWriter.onerror = reject;
-	        const blob = new Blob([data], {type: 'text/plain'});
+	        const blob = new Blob([data], {type: getMimeTypeByData(data)});
 	        fileWriter.write(blob);
 	      });
 	    })
@@ -468,19 +481,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Reads from fileEntry
 	 *
 	 * @param {Object} fileEntry
+	 * @param {Object} [options]
+	 * @param {String} [options.type] how content should be read
 	 * @returns {Promise<String>}
 	 */
-	exports.read = function (fileEntry) {
+	exports.read = function (fileEntry, options = {}) {
 	  return utils.promiseCall(fileEntry, 'file')
 	    .then(file => {
 	      return new Promise((resolve, reject) => {
 	        const reader = new FileReader();
 	        reader.onload = () => resolve(reader.result);
 	        reader.onerror = () => reject(reader.error);
-	        reader.readAsText(file);
+	        // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
+	        readAs(options.type, reader, file);
 	      });
 	    });
 	};
+
+	function getMimeTypeByData(data) {
+	  if (typeof data === 'string') {
+	    return 'text/plain';
+	  } else {
+	    return 'application/octet-binary';
+	  }
+	}
+
+	function readAs(type, reader, file) {
+	  switch (type) {
+	    case 'ArrayBuffer':
+	      return reader.readAsArrayBuffer(file);
+	    case 'BinaryString':
+	      return reader.readAsBinaryString(file);
+	    case 'DataURL':
+	      return reader.readAsDataURL(file);
+	    case 'Text':
+	    default:
+	      return reader.readAsText(file);
+	  }
+	}
 
 	function createChildFile(parent, fileName) {
 	  return utils.promiseCall(parent, 'getFile', fileName, {create: true, exclusive: false});
