@@ -5,8 +5,14 @@ node_js:
 
 script: npm run build-ci
 
+before_deploy:
+  - npm run dist
+
 deploy:
   provider: releases
+  # See travis-ci/travis-ci#6772
+  edge:
+    branch: releases-fix
   api_key:
     secure: hm+HvpMWTmVZ0IXuHvzZM5GpP93JCoFHrhsvV9E+ttjs67S0ivrbXtva82UlVsfJXs3sIR7qCHOmEy/njpz42ef3DbK7rLSqXRWYkRIWpDQUZBXmreyOTuU0Ce8tPps/RVNP8LMY6xUeWKgkCsCU6Y7mUHtS6Ii/e9/f4vqHocLFZbA4d2GABoYeC3fL43FE+Yyx4qNqbxAqwJjnP7try7uBy9jIEDBFAPmJO6R0qVV3dXIJo8LWSqq+JwX1tk2036pZxkIMClwzqzgpgsLRS1vrwqIACwx5dPPY9AWCIJg9hCJDt915r46ypz9Ibo2+2wLvwfcm4AmZuqbThCO9XEbp4v3gdLhu2nAED47C6iGc+E3pkOyraNiGBa6e1wg7oCEyf6oBEjD34yNuK3p3QdY5uBsFKxn/uIj2+TxbgamY8/GZvXnWJ7e12DCt7IPn7HsdmnS1DPn1U5RCz4U4a98UtnpAeYMjGpv3+LK47ManihX9qWL8hIHE1mC42n3uQfSl6BX/T9eyJLAKVhcRl1aGL7qcyt57a+8B0jV9sPNnoupcEBpNRZNOBuZr1zcP5RN3JNKZYGA2rS2yjej9dvB7T+FtDGcZltHjDGBD/7MuZNm7x1M+yi9ahKKr8iUwTjOiSDirLCH+5RcC6lWmRCa1jlPj2kpcPUrstRKTYlY=
   file: dist/bro-fs.js

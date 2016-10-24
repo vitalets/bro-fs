@@ -22,7 +22,7 @@
     "dist": "webpack",
     "build": "npm run code && npm test && npm run dist",
     "build-docs": "npm run build && npm run docs && npm run update-demo",
-    "build-ci": "npm run test-sauce && npm run dist",
+    "build-ci": "npm run test-sauce",
     "eslint": "eslint src test karma.*.js",
     "docs": "rimraf 'docs/!(demo)' && jsdoc -c ./jsdoc.json",
     "update-demo": "cp dist/bro-fs.js docs/demo/bro-fs.js",
