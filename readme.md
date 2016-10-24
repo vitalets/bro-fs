@@ -1,5 +1,6 @@
 # bro-fs
 
+[![Build Status](https://travis-ci.org/vitalets/bro-fs.svg?branch=master)](https://travis-ci.org/vitalets/bro-fs)
 [![GitHub version](https://badge.fury.io/gh/vitalets%2Fbro-fs.svg)](https://github.com/vitalets/bro-fs/releases/latest)
 
 
