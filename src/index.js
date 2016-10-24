@@ -69,18 +69,20 @@ exports.getRoot = function () {
  * Reads file content
  *
  * @param {String} path
+ * @param {Object} [options]
+ * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL
  * @returns {Promise<String>}
  */
-exports.readFile = function (path) {
+exports.readFile = function (path, options = {}) {
   return file.get(path)
-    .then(fileEntry => file.read(fileEntry));
+    .then(fileEntry => file.read(fileEntry, options));
 };
 
 /**
  * Writes data to file
  *
  * @param {String} path
- * @param {String} data
+ * @param {String|Blob|File|ArrayBuffer} data
  * @returns {Promise}
  */
 exports.writeFile = function (path, data) {
@@ -92,7 +94,7 @@ exports.writeFile = function (path, data) {
  * Appends data to file
  *
  * @param {String} path
- * @param {String} data
+ * @param {String|Blob|File|ArrayBuffer} data
  * @returns {Promise}
  */
 exports.appendFile = function (path, data) {

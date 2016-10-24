@@ -43,6 +43,7 @@ exports.get = function (path, options = {}) {
  * @param {String} data
  * @param {Object} [options]
  * @param {Boolean} [options.append]
+ * @param {String} [options.type] mimetype
  * @returns {Promise}
  */
 exports.write = function (fileEntry, data, options = {}) {
@@ -54,7 +55,7 @@ exports.write = function (fileEntry, data, options = {}) {
         }
         fileWriter.onwriteend = resolve;
         fileWriter.onerror = reject;
-        const blob = new Blob([data], {type: 'text/plain'});
+        const blob = new Blob([data], {type: getMimeTypeByData(data)});
         fileWriter.write(blob);
       });
     })
@@ -65,19 +66,44 @@ exports.write = function (fileEntry, data, options = {}) {
  * Reads from fileEntry
  *
  * @param {Object} fileEntry
+ * @param {Object} [options]
+ * @param {String} [options.type] how content should be read
  * @returns {Promise<String>}
  */
-exports.read = function (fileEntry) {
+exports.read = function (fileEntry, options = {}) {
   return utils.promiseCall(fileEntry, 'file')
     .then(file => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
         reader.onerror = () => reject(reader.error);
-        reader.readAsText(file);
+        // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
+        readAs(options.type, reader, file);
       });
     });
 };
+
+function getMimeTypeByData(data) {
+  if (typeof data === 'string') {
+    return 'text/plain';
+  } else {
+    return 'application/octet-binary';
+  }
+}
+
+function readAs(type, reader, file) {
+  switch (type) {
+    case 'ArrayBuffer':
+      return reader.readAsArrayBuffer(file);
+    case 'BinaryString':
+      return reader.readAsBinaryString(file);
+    case 'DataURL':
+      return reader.readAsDataURL(file);
+    case 'Text':
+    default:
+      return reader.readAsText(file);
+  }
+}
 
 function createChildFile(parent, fileName) {
   return utils.promiseCall(parent, 'getFile', fileName, {create: true, exclusive: false});
