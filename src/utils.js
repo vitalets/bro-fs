@@ -8,8 +8,10 @@ exports.promiseCall = function (obj, method) {
   }
   const args = [].slice.call(arguments, 2);
   return new Promise((resolve, reject) => {
-    args.push(resolve, reject);
-    return obj[method].apply(obj, args);
+    // create error before call to capture stack
+    const errback = getErrback(new Error(), method, args, reject);
+    const fullArgs = args.concat([resolve, errback]);
+    return obj[method].apply(obj, fullArgs);
   });
 };
 
@@ -27,3 +29,21 @@ exports.splitPath = function (path = '') {
   }
   return path.split('/').filter(Boolean);
 };
+
+/**
+ * Convert DOMException to regular error to have normal stack trace
+ * Also add some details to error message
+ */
+function getErrback(err, method, args, reject) {
+  return function (e) {
+    let argsStr = '';
+    try {
+      argsStr = JSON.stringify(args);
+    } catch (ex) {
+      argsStr = args.join(', ');
+    }
+    err.name = e.name;
+    err.message = `${e.message} Call: ${method}(${argsStr})`;
+    reject(err);
+  };
+}

@@ -78,6 +78,11 @@ describe('read/write/append file', function () {
   it('should reject when reading non-existing file', function() {
     return Promise.resolve()
       .then(() => fs.readFile('a.txt'))
-      .catch(e => assert.notFound(e))
+      .catch(e => {
+        assert.equal(e.name, 'NotFoundError');
+        assert.include(e.message, 'a.txt');
+        assert.include(e.stack, 'a.txt');
+        assert.include(e.stack, 'getChildFile');
+      })
   });
 });

@@ -11,7 +11,10 @@ describe('unlink', function () {
   it('should reject for non-existing file', function() {
     return Promise.resolve()
       .then(() => fs.unlink('a.txt'))
-      .catch(e => assert.notFound(e))
+      .catch(e => {
+        assert.equal(e.name, 'NotFoundError');
+        assert.include(e.message, 'a.txt');
+      })
   });
 
 });

@@ -30,7 +30,9 @@ describe('stat', function () {
   it('should reject for missing entry', function() {
     return Promise.resolve()
       .then(() => fs.stat('a.txt'))
-      .catch(e => assert.notFound(e))
+      .catch(e => {
+        assert.equal(e.name, 'NotFoundError');
+      });
   });
 
 });

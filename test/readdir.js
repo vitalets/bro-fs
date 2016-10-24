@@ -35,8 +35,13 @@ describe('readdir', function () {
 
   it('should reject for non-existing dir', function() {
     return Promise.resolve()
-      .then(() => fs.readdir('a'))
-      .catch(e => assert.notFound(e))
+      .then(() => fs.readdir('mydir'))
+      .catch(e => {
+        assert.equal(e.name, 'NotFoundError');
+        assert.include(e.message, 'mydir');
+        assert.include(e.stack, 'mydir');
+        assert.include(e.stack, 'getChildDir');
+      })
   });
 
   it('should return all entries with deep option', function() {
