@@ -59,10 +59,10 @@ Discussion:
 * [chromestore.js](https://github.com/summera/chromestore.js) - looks obsolete, callbacks
 * [BrowserFS](https://github.com/jvilk/BrowserFS) - many backends, callbacks
 * [fs-web](https://www.npmjs.com/package/fs-web) - store files in IndexedDB, not html5 filesystem
-* [web-fs](https://github.com/mmckegg/web-fs) - abanboned
+* [web-fs](https://github.com/mmckegg/web-fs) - abandoned
 * [browserify-fs](https://github.com/mafintosh/browserify-fs) - uses leveldb under hood, callbacks
-* [fs-browserify](https://github.com/CrabDude/fs-browserify) - abanboned
-* [dom-fs](https://www.npmjs.com/package/dom-fs) - abanboned
+* [fs-browserify](https://github.com/CrabDude/fs-browserify) - abandoned
+* [dom-fs](https://www.npmjs.com/package/dom-fs) - abandoned
 
 ## License
 MIT
