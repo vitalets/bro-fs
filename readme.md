@@ -1,7 +1,7 @@
 # bro-fs
 
 [![Build Status](https://travis-ci.org/vitalets/bro-fs.svg?branch=master)](https://travis-ci.org/vitalets/bro-fs)
-[![GitHub version](https://badge.fury.io/gh/vitalets%2Fbro-fs.svg)](https://github.com/vitalets/bro-fs/releases)
+[![GitHub version](https://badge.fury.io/gh/vitalets%2Fbro-fs.svg)](https://github.com/vitalets/bro-fs/releases/latest)
 
 Promise-based [HTML5 Filesystem API](https://dev.w3.org/2009/dap/file-system/file-dir-sys.html)
 allowing to work with sandboxed filesystem in browser.  
@@ -18,7 +18,7 @@ Currently it is supported [only in Chrome](https://developer.mozilla.org/en-US/d
 ```bash
 npm install bro-fs --save
 ```
-or download manually [latest release](https://github.com/vitalets/bro-fs/releases).
+or download manually [latest release](https://github.com/vitalets/bro-fs/releases/latest).
 
 ## Usage
 Webpack/browserify:
