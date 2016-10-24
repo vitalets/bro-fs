@@ -18,13 +18,13 @@
     "dev": "karma start",
     "code": "npm run eslint",
     "test": "karma start --single-run",
-    "docs": "rimraf 'docs/!(demo)' && jsdoc -c ./jsdoc.json",
-    "build": "webpack",
+    "build": "npm run code && npm test && webpack",
+    "build-docs": "npm run build && npm run docs && npm run update-demo",
     "eslint": "eslint src test karma.conf.js",
+    "docs": "rimraf 'docs/!(demo)' && jsdoc -c ./jsdoc.json",
     "update-demo": "cp dist/bro-fs.js docs/demo/bro-fs.js",
-    "preversion": "npm run code && npm test && npm run build && npm run docs && npm run update-demo",
-    "release-patch": "npm version patch",
-    "postversion": "npm publish && git push --follow-tags --no-verify"
+    "release-patch": "npm run build && npm version patch && npm run publish",
+    "publish": "npm publish && git push --follow-tags --no-verify"
   },
   "devDependencies": {
     "chai": "^3.5.0",
