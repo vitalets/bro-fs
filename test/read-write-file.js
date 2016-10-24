@@ -48,8 +48,8 @@ describe('read/write/append file', function () {
   it('should overwrite existing file and read content', function() {
     return Promise.resolve()
       .then(() => fs.writeFile('a.txt', 'abc'))
-      .then(() => fs.writeFile('a.txt', 'def'))
-      .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'def'))
+      .then(() => fs.writeFile('a.txt', 'd'))
+      .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'd'))
   });
 
   it('should create needed directories and write new file', function() {

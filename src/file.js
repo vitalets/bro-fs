@@ -52,8 +52,18 @@ exports.write = function (fileEntry, data, options = {}) {
       return new Promise((resolve, reject) => {
         if (options.append) {
           fileWriter.seek(fileWriter.length);
+          fileWriter.onwriteend = resolve;
+        } else {
+          let truncated = false;
+          fileWriter.onwriteend = function () {
+            if (!truncated) {
+              truncated = true;
+              this.truncate(this.position);
+            } else {
+              resolve();
+            }
+          };
         }
-        fileWriter.onwriteend = resolve;
         fileWriter.onerror = reject;
         const blob = new Blob([data], {type: getMimeTypeByData(data)});
         fileWriter.write(blob);
