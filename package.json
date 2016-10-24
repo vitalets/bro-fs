@@ -54,5 +54,15 @@
       "pre-push": "npm run code && npm test"
     }
   },
+  "keywords": [
+    "fs",
+    "filesystem",
+    "html5-fs",
+    "html5-filesystem",
+    "browser-fs",
+    "browser-filesystem",
+    "web-fs",
+    "web-filesystem"
+  ],
   "license": "MIT"
 }
