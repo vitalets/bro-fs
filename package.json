@@ -27,7 +27,7 @@
     "docs": "rimraf 'docs/!(demo)' && jsdoc -c ./jsdoc.json",
     "update-demo": "cp dist/bro-fs.js docs/demo/bro-fs.js",
     "release-patch": "npm run build && npm version patch && npm run publish-to-npm",
-    "publish-to-npm": "npm publish && git push --follow-tags --no-verify"
+    "publish-to-npm": "npm publish && git push --no-verify && git push --tags --no-verify"
   },
   "devDependencies": {
     "chai": "^3.5.0",
