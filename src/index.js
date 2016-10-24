@@ -110,7 +110,12 @@ exports.appendFile = function (path, data) {
  */
 exports.unlink = function (path) {
   return file.get(path)
-    .then(fileEntry => utils.promiseCall(fileEntry, 'remove'));
+    .then(
+      fileEntry => utils.promiseCall(fileEntry, 'remove'),
+      e => errors.isNotFoundError(e)
+        ? Promise.resolve()
+        : Promise.reject(e)
+    );
 };
 
 /**
@@ -147,9 +152,13 @@ exports.copy = function (oldPath, newPath, options = {}) {
  */
 exports.rmdir = function (path) {
   return directory.get(path)
-    .then(dir => dir === root.get()
-      ? Promise.reject('Can not rmdir root. Use clear() to clear fs.')
-      : utils.promiseCall(dir, 'removeRecursively')
+    .then(
+      dir => dir === root.get()
+        ? Promise.reject('Can not rmdir root. Use clear() to clear fs.')
+        : utils.promiseCall(dir, 'removeRecursively'),
+      e => errors.isNotFoundError(e)
+        ? Promise.resolve()
+        : Promise.reject(e)
     )
 };
 
