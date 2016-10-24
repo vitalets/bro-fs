@@ -16,7 +16,7 @@ Currently it is supported [only in Chrome](https://developer.mozilla.org/en-US/d
 ```bash
 npm install bro-fs --save
 ```
-or download manually [latest release]().
+or download manually [latest release](https://github.com/vitalets/bro-fs/releases).
 
 ## Usage
 Webpack/browserify:
