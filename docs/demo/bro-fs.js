@@ -1,4 +1,4 @@
-/*! bro-fs v0.1.10 */
+/*! bro-fs v0.1.11 */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -69,7 +69,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	const quota = __webpack_require__(7);
 
 	/**
-	 * Is filesystem API supported
+	 * Is filesystem API supported by current browser
 	 *
 	 * @returns {Boolean}
 	 */
@@ -125,7 +125,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Reads file content
 	 *
-	 * @param {String} path
+	 * @param {String|FileSystemFileEntry} path
 	 * @param {Object} [options]
 	 * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL
 	 * @returns {Promise<String>}
@@ -150,7 +150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Appends data to file
 	 *
-	 * @param {String} path
+	 * @param {String|FileSystemFileEntry} path
 	 * @param {String|Blob|File|ArrayBuffer} data
 	 * @returns {Promise}
 	 */
@@ -162,7 +162,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Removes file
 	 *
-	 * @param {String} path
+	 * @param {String|FileSystemFileEntry} path
 	 * @returns {Promise}
 	 */
 	exports.unlink = function (path) {
@@ -170,7 +170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    .then(
 	      fileEntry => utils.promiseCall(fileEntry, 'remove'),
 	      e => errors.isNotFoundError(e)
-	        ? Promise.resolve()
+	        ? Promise.resolve(false)
 	        : Promise.reject(e)
 	    );
 	};
@@ -178,11 +178,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Renames file or directory
 	 *
-	 * @param {String} oldPath
+	 * @param {String|FileSystemEntry} oldPath
 	 * @param {String} newPath
 	 * @param {Object} [options]
 	 * @param {Boolean} [options.create=false] create missing directories
-	 * @returns {Promise<FileSystemFileEntry>}
+	 * @returns {Promise<FileSystemEntry>}
 	 */
 	exports.rename = function (oldPath, newPath, options = {}) {
 	  return moveOrCopy(oldPath, newPath, 'moveTo', options);
@@ -191,11 +191,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Copies file or directory
 	 *
-	 * @param {String} oldPath
+	 * @param {String|FileSystemEntry} oldPath
 	 * @param {String} newPath
 	 * @param {Object} [options]
 	 * @param {Boolean} [options.create=false] create missing directories
-	 * @returns {Promise<FileSystemFileEntry>}
+	 * @returns {Promise<FileSystemEntry>}
 	 */
 	exports.copy = function (oldPath, newPath, options = {}) {
 	  return moveOrCopy(oldPath, newPath, 'copyTo', options);
@@ -204,23 +204,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Removes directory recursively
 	 *
-	 * @param {String} path
+	 * @param {String|FileSystemDirectoryEntry} path
 	 * @returns {Promise}
 	 */
 	exports.rmdir = function (path) {
 	  return directory.get(path)
 	    .then(
 	      dir => dir === root.get()
-	        ? Promise.reject('Can not rmdir root. Use clear() to clear fs.')
+	        ? Promise.reject('Can not remove root. Use clear() to clear fs.')
 	        : utils.promiseCall(dir, 'removeRecursively'),
 	      e => errors.isNotFoundError(e)
-	        ? Promise.resolve()
+	        ? Promise.resolve(false)
 	        : Promise.reject(e)
 	    )
 	};
 
 	/**
-	 * Creates new directory
+	 * Creates new directory. If directory already exists - it will not be overwritten.
 	 *
 	 * @param {String} path
 	 * @returns {Promise<FileSystemDirectoryEntry>}
@@ -236,7 +236,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @returns {Promise<Boolean>}
 	 */
 	exports.exists = function (path) {
-	  return getFileOrDir(path)
+	  return exports.getEntry(path)
 	    .then(() => true, e => errors.isNotFoundError(e)
 	      ? false
 	      : Promise.reject(e)
@@ -246,18 +246,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Gets info about file or directory
 	 *
-	 * @param {String} path
+	 * @param {String|FileSystemEntry} path
 	 * @returns {Promise<StatObject>}
 	 */
 	exports.stat = function (path) {
-	  return getFileOrDir(path)
+	  return exports.getEntry(path)
 	    .then(entry => stat.get(entry));
 	};
 
 	/**
 	 * Reads directory content
 	 *
-	 * @param {String} path
+	 * @param {String|FileSystemDirectoryEntry} path
 	 * @param {Object} [options]
 	 * @param {Boolean} [options.deep=false] read recursively and attach data as `children` property
 	 * @returns {Promise<Array<FileSystemEntry>>}
@@ -288,21 +288,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Gets URL for path
 	 *
-	 * @param {String} path
+	 * @param {String|FileSystemEntry} path
 	 * @returns {String}
 	 */
 	exports.getUrl = function (path) {
-	  return getFileOrDir(path)
+	  return exports.getEntry(path)
 	    .then(entry => entry.toURL())
 	};
 
-	function getFileOrDir(path) {
+	/**
+	 * Gets file or directory
+	 *
+	 * @param {String|FileSystemEntry} path
+	 * @returns {Promise<FileSystemEntry>}
+	 */
+	exports.getEntry = function (path) {
 	  return file.get(path)
 	    .catch(e => errors.isTypeMismatchError(e)
 	      ? directory.get(path)
 	      : Promise.reject(e)
 	    );
-	}
+	};
 
 	function moveOrCopy(oldPath, newPath, method, options) {
 	  if (oldPath === newPath) {
@@ -313,7 +319,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    fileName: newName,
 	  } = utils.parsePath(newPath);
 	  return Promise.all([
-	    getFileOrDir(oldPath),
+	    exports.getEntry(oldPath),
 	    directory.get(newParentDirPath, options)
 	  ]).then(([enrty, newParent]) => {
 	    return utils.promiseCall(enrty, method, newParent, newName);
@@ -444,13 +450,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Returns FileEntry by path
 	 * If options.create = true will create missing directories and file
 	 *
-	 * @param {String} path
+	 * @param {String|FileSystemFileEntry} path
 	 * @param {Object} [options]
 	 * @param {Boolean} [options.create]
 	 * @param {Boolean} [options.overwrite]
 	 * @returns {Promise}
 	 */
 	exports.get = function (path, options = {}) {
+	  if (path && typeof path !== 'string') {
+	    return path.isFile
+	      ? Promise.resolve(path)
+	      : Promise.reject(new DOMError('TypeMismatchError', 'Expected file but got directory'));
+	  }
 	  const {dirPath, fileName} = utils.parsePath(path);
 	  return Promise.resolve()
 	    .then(() => directory.get(dirPath, options))
@@ -580,6 +591,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @returns {Promise}
 	 */
 	exports.get = function (path, options = {}) {
+	  if (path && typeof path !== 'string') {
+	    return path.isDirectory
+	      ? Promise.resolve(path)
+	      : Promise.reject(new DOMError('TypeMismatchError', 'Expected directory but got file'));
+	  }
 	  const parts = utils.splitPath(path);
 	  return parts.reduce((res, dirName) => {
 	    return res.then(dir => {
