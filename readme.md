@@ -8,6 +8,7 @@ allowing to work with sandboxed filesystem in browser.
 API is similar to [Node.js fs module](https://nodejs.org/api/fs.html) with some extra sugar.
 Currently it is supported [only in Chrome](https://developer.mozilla.org/en-US/docs/Web/API/FileSystem#Browser_compatibility). 
 
+Tested in:  
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/autovit.svg)](https://saucelabs.com/u/autovit)
 
 ## Live demo & Docs
