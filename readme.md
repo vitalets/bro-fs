@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/vitalets/bro-fs.svg?branch=master)](https://travis-ci.org/vitalets/bro-fs)
 [![GitHub version](https://badge.fury.io/gh/vitalets%2Fbro-fs.svg)](https://github.com/vitalets/bro-fs/releases/latest)
 
-Promise-based [HTML5 Filesystem API](https://dev.w3.org/2009/dap/file-system/file-dir-sys.html)
+Promise-based wrapper over [HTML5 Filesystem API](https://dev.w3.org/2009/dap/file-system/file-dir-sys.html)
 allowing to work with sandboxed filesystem in browser.  
 API is similar to [Node.js fs module](https://nodejs.org/api/fs.html) with some extra sugar.
 Currently it is supported [only in Chrome](https://developer.mozilla.org/en-US/docs/Web/API/FileSystem#Browser_compatibility). 
