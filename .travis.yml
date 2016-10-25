@@ -3,7 +3,7 @@ language: node_js
 node_js:
   - '6.3'
 
-script: npm run build-ci
+script: npm run test-sauce
 
 before_deploy:
   - npm run dist
