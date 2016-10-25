@@ -16,6 +16,11 @@ const root = require('./root');
  * @returns {Promise}
  */
 exports.get = function (path, options = {}) {
+  if (path && typeof path !== 'string') {
+    return path.isDirectory
+      ? Promise.resolve(path)
+      : Promise.reject(new DOMError('TypeMismatchError', 'Expected directory but got file'));
+  }
   const parts = utils.splitPath(path);
   return parts.reduce((res, dirName) => {
     return res.then(dir => {

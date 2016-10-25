@@ -12,7 +12,7 @@ const stat = require('./stat');
 const quota = require('./quota');
 
 /**
- * Is filesystem API supported
+ * Is filesystem API supported by current browser
  *
  * @returns {Boolean}
  */
@@ -68,7 +68,7 @@ exports.getRoot = function () {
 /**
  * Reads file content
  *
- * @param {String} path
+ * @param {String|FileSystemFileEntry} path
  * @param {Object} [options]
  * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL
  * @returns {Promise<String>}
@@ -93,7 +93,7 @@ exports.writeFile = function (path, data) {
 /**
  * Appends data to file
  *
- * @param {String} path
+ * @param {String|FileSystemFileEntry} path
  * @param {String|Blob|File|ArrayBuffer} data
  * @returns {Promise}
  */
@@ -105,7 +105,7 @@ exports.appendFile = function (path, data) {
 /**
  * Removes file
  *
- * @param {String} path
+ * @param {String|FileSystemFileEntry} path
  * @returns {Promise}
  */
 exports.unlink = function (path) {
@@ -113,7 +113,7 @@ exports.unlink = function (path) {
     .then(
       fileEntry => utils.promiseCall(fileEntry, 'remove'),
       e => errors.isNotFoundError(e)
-        ? Promise.resolve()
+        ? Promise.resolve(false)
         : Promise.reject(e)
     );
 };
@@ -121,11 +121,11 @@ exports.unlink = function (path) {
 /**
  * Renames file or directory
  *
- * @param {String} oldPath
+ * @param {String|FileSystemEntry} oldPath
  * @param {String} newPath
  * @param {Object} [options]
  * @param {Boolean} [options.create=false] create missing directories
- * @returns {Promise<FileSystemFileEntry>}
+ * @returns {Promise<FileSystemEntry>}
  */
 exports.rename = function (oldPath, newPath, options = {}) {
   return moveOrCopy(oldPath, newPath, 'moveTo', options);
@@ -134,11 +134,11 @@ exports.rename = function (oldPath, newPath, options = {}) {
 /**
  * Copies file or directory
  *
- * @param {String} oldPath
+ * @param {String|FileSystemEntry} oldPath
  * @param {String} newPath
  * @param {Object} [options]
  * @param {Boolean} [options.create=false] create missing directories
- * @returns {Promise<FileSystemFileEntry>}
+ * @returns {Promise<FileSystemEntry>}
  */
 exports.copy = function (oldPath, newPath, options = {}) {
   return moveOrCopy(oldPath, newPath, 'copyTo', options);
@@ -147,23 +147,23 @@ exports.copy = function (oldPath, newPath, options = {}) {
 /**
  * Removes directory recursively
  *
- * @param {String} path
+ * @param {String|FileSystemDirectoryEntry} path
  * @returns {Promise}
  */
 exports.rmdir = function (path) {
   return directory.get(path)
     .then(
       dir => dir === root.get()
-        ? Promise.reject('Can not rmdir root. Use clear() to clear fs.')
+        ? Promise.reject('Can not remove root. Use clear() to clear fs.')
         : utils.promiseCall(dir, 'removeRecursively'),
       e => errors.isNotFoundError(e)
-        ? Promise.resolve()
+        ? Promise.resolve(false)
         : Promise.reject(e)
     )
 };
 
 /**
- * Creates new directory
+ * Creates new directory. If directory already exists - it will not be overwritten.
  *
  * @param {String} path
  * @returns {Promise<FileSystemDirectoryEntry>}
@@ -179,7 +179,7 @@ exports.mkdir = function (path) {
  * @returns {Promise<Boolean>}
  */
 exports.exists = function (path) {
-  return getFileOrDir(path)
+  return exports.getEntry(path)
     .then(() => true, e => errors.isNotFoundError(e)
       ? false
       : Promise.reject(e)
@@ -189,18 +189,18 @@ exports.exists = function (path) {
 /**
  * Gets info about file or directory
  *
- * @param {String} path
+ * @param {String|FileSystemEntry} path
  * @returns {Promise<StatObject>}
  */
 exports.stat = function (path) {
-  return getFileOrDir(path)
+  return exports.getEntry(path)
     .then(entry => stat.get(entry));
 };
 
 /**
  * Reads directory content
  *
- * @param {String} path
+ * @param {String|FileSystemDirectoryEntry} path
  * @param {Object} [options]
  * @param {Boolean} [options.deep=false] read recursively and attach data as `children` property
  * @returns {Promise<Array<FileSystemEntry>>}
@@ -231,21 +231,27 @@ exports.clear = function () {
 /**
  * Gets URL for path
  *
- * @param {String} path
+ * @param {String|FileSystemEntry} path
  * @returns {String}
  */
 exports.getUrl = function (path) {
-  return getFileOrDir(path)
+  return exports.getEntry(path)
     .then(entry => entry.toURL())
 };
 
-function getFileOrDir(path) {
+/**
+ * Gets file or directory
+ *
+ * @param {String|FileSystemEntry} path
+ * @returns {Promise<FileSystemEntry>}
+ */
+exports.getEntry = function (path) {
   return file.get(path)
     .catch(e => errors.isTypeMismatchError(e)
       ? directory.get(path)
       : Promise.reject(e)
     );
-}
+};
 
 function moveOrCopy(oldPath, newPath, method, options) {
   if (oldPath === newPath) {
@@ -256,7 +262,7 @@ function moveOrCopy(oldPath, newPath, method, options) {
     fileName: newName,
   } = utils.parsePath(newPath);
   return Promise.all([
-    getFileOrDir(oldPath),
+    exports.getEntry(oldPath),
     directory.get(newParentDirPath, options)
   ]).then(([enrty, newParent]) => {
     return utils.promiseCall(enrty, method, newParent, newName);

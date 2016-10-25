@@ -10,13 +10,18 @@ const directory = require('./directory');
  * Returns FileEntry by path
  * If options.create = true will create missing directories and file
  *
- * @param {String} path
+ * @param {String|FileSystemFileEntry} path
  * @param {Object} [options]
  * @param {Boolean} [options.create]
  * @param {Boolean} [options.overwrite]
  * @returns {Promise}
  */
 exports.get = function (path, options = {}) {
+  if (path && typeof path !== 'string') {
+    return path.isFile
+      ? Promise.resolve(path)
+      : Promise.reject(new DOMError('TypeMismatchError', 'Expected file but got directory'));
+  }
   const {dirPath, fileName} = utils.parsePath(path);
   return Promise.resolve()
     .then(() => directory.get(dirPath, options))

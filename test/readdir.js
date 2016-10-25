@@ -26,6 +26,17 @@ describe('readdir', function () {
       });
   });
 
+  it('should return array of dir entries by entry', function() {
+    return Promise.resolve()
+      .then(() => fs.writeFile('a/a.txt', 'abc'))
+      .then(() => fs.mkdir('a'))
+      .then(entry => fs.readdir(entry))
+      .then(entries => {
+        assert.lengthOf(entries, 1);
+        assert.equal(entries[0].name, 'a.txt');
+      });
+  });
+
   it('should return empty array for empty dir', function() {
     return Promise.resolve()
       .then(() => fs.mkdir('a/b'))

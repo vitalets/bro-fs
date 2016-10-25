@@ -9,6 +9,14 @@ describe('copy', function () {
       .then(() => assert.eventually.equal(fs.readFile('b.txt'), 'abc'))
   });
 
+  it('should copy file in the same dir by entry', function () {
+    return Promise.resolve()
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(entry => fs.copy(entry, 'b.txt'))
+      .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'abc'))
+      .then(() => assert.eventually.equal(fs.readFile('b.txt'), 'abc'))
+  });
+
   it('should copy file to another dir', function () {
     return Promise.resolve()
       .then(() => fs.mkdir('b'))

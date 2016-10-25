@@ -9,6 +9,14 @@ describe('rename', function () {
       .then(() => assert.eventually.equal(fs.readFile('b.txt'), 'abc'))
   });
 
+  it('should rename file in the same dir by entry', function () {
+    return Promise.resolve()
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(entry => fs.rename(entry, 'b.txt'))
+      .then(() => assert.eventually.notOk(fs.exists('a.txt')))
+      .then(() => assert.eventually.equal(fs.readFile('b.txt'), 'abc'))
+  });
+
   it('should move file to another dir', function () {
     return Promise.resolve()
       .then(() => fs.mkdir('b'))

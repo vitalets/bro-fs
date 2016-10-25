@@ -1,21 +1,19 @@
-describe('read/write/append file', function () {
+describe('write file', function () {
 
-  it('should write data and return FileEntry', function() {
+  it('should return FileEntry', function() {
     return Promise.resolve()
       .then(() => fs.writeFile('a.txt', 'abc'))
       .then(res => assert.equal(res.toString(), '[object FileEntry]'))
   });
 
-  it('should write and read as string', function() {
+  it('should write string', function() {
     return Promise.resolve()
       .then(() => fs.writeFile('a.txt', 'abc'))
       .then(() => fs.readFile('a.txt'))
       .then(res => assert.equal(res, 'abc'))
   });
 
-  // todo truncate write 'abc', then write 'b'!
-
-  it('should write and read as array buffer', function() {
+  it('should write array buffer', function() {
     const data = new Int32Array([42, 24]);
     return Promise.resolve()
       .then(() => fs.writeFile('a.txt', data.buffer))
@@ -29,7 +27,7 @@ describe('read/write/append file', function () {
   });
 
   // from: https://developer.mozilla.org/ru/docs/Web/API/FileReader/readAsBinaryString
-  it('should write and read as binary string', function() {
+  it('should write binary string', function() {
     const canvas = document.createElement('canvas');
     return Promise.resolve()
       .then(() => new Promise(resolve => canvas.toBlob(resolve)))
@@ -38,21 +36,14 @@ describe('read/write/append file', function () {
       .then(res => assert.ok(res));
   });
 
-  it('should write and read as data url', function() {
-    return Promise.resolve()
-      .then(() => fs.writeFile('a.txt', 'abc'))
-      .then(() => fs.readFile('a.txt', {type: 'DataURL'}))
-      .then(res => assert.equal(res, 'data:text/plain;base64,YWJj'));
-  });
-
-  it('should overwrite existing file and read content', function() {
+  it('should overwrite existing file', function() {
     return Promise.resolve()
       .then(() => fs.writeFile('a.txt', 'abc'))
       .then(() => fs.writeFile('a.txt', 'd'))
       .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'd'))
   });
 
-  it('should create needed directories and write new file', function() {
+  it('should create needed directories', function() {
     return Promise.resolve()
       .then(() => fs.writeFile('a/b/c.txt', 'abc'))
       .then(() => assert.eventually.ok(fs.exists('a')))
@@ -61,28 +52,4 @@ describe('read/write/append file', function () {
       .then(() => assert.eventually.equal(fs.readFile('a/b/c.txt'), 'abc'))
   });
 
-  it('should append to new file', function() {
-    return Promise.resolve()
-      .then(() => fs.appendFile('a.txt', 'def'))
-      .then(res => assert.equal(res.toString(), '[object FileEntry]'))
-      .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'def'))
-  });
-
-  it('should append to existing file', function() {
-    return Promise.resolve()
-      .then(() => fs.writeFile('a.txt', 'abc'))
-      .then(() => fs.appendFile('a.txt', 'def'))
-      .then(() => assert.eventually.equal(fs.readFile('a.txt'), 'abcdef'))
-  });
-
-  it('should reject when reading non-existing file', function() {
-    return Promise.resolve()
-      .then(() => fs.readFile('a.txt'))
-      .catch(e => {
-        assert.equal(e.name, 'NotFoundError');
-        assert.include(e.message, 'a.txt');
-        assert.include(e.stack, 'a.txt');
-        assert.include(e.stack, 'getChildFile');
-      })
-  });
 });

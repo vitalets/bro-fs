@@ -25,6 +25,13 @@ describe('rmdir', function () {
       .then(() => assert.eventually.notOk(fs.exists('a/b')))
   });
 
+  it('should remove dir by entry', function() {
+    return Promise.resolve()
+      .then(() => fs.mkdir('a/b'))
+      .then(entry => fs.rmdir(entry))
+      .then(() => assert.eventually.notOk(fs.exists('a/b')))
+  });
+
   it('should "remove" non-existing dir', function() {
     return Promise.resolve()
       .then(() => fs.rmdir('a'))
