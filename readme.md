@@ -12,7 +12,7 @@ Currently it is supported [only in Chrome](https://developer.mozilla.org/en-US/d
 
 ## Live demo & Docs
 * [Demo](https://vitalets.github.io/bro-fs/demo/)
-* [Documentaion](https://vitalets.github.io/bro-fs/)
+* [API Documentaion](https://vitalets.github.io/bro-fs/)
 
 ## Install
 ```bash
