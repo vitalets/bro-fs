@@ -52,6 +52,7 @@ module.exports = function (config) {
     captureTimeout: 120000,
     customLaunchers: customLaunchers,
     browsers: Object.keys(customLaunchers),
+    reporters: ['dots', 'saucelabs'],
     singleRun: true
   })
 };
