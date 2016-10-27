@@ -16,13 +16,13 @@ module.exports = function (config) {
       base: 'SauceLabs',
       browserName: 'chrome',
       platform: 'Windows 7',
-      version: '54'
+      version: '52'
     },
     sl_chrome_win10: {
       base: 'SauceLabs',
       browserName: 'chrome',
       platform: 'Windows 10',
-      version: '54'
+      version: '53'
     },
     sl_chrome_osx10: {
       base: 'SauceLabs',

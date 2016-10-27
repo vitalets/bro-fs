@@ -66,4 +66,4 @@ Discussion:
 * [dom-fs](https://www.npmjs.com/package/dom-fs) - abandoned
 
 ## License
-MIT
+MIT @ [Vitaliy Potapov](https://github.com/vitalets)
