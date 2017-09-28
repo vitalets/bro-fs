@@ -4,7 +4,8 @@
   },
   "globals": {
     "fs": false,
-    "assert": false
+    "assert": false,
+    "chai": false
   },
   "plugins": [
     "mocha"

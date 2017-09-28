@@ -17,7 +17,7 @@ module.exports = function (config) {
       },
     },
     */
-    frameworks: ['mocha', 'chai-as-promised', 'chai-shallow-deep-equal', 'chai'],
+    frameworks: ['mocha', 'chai'],
     files: ['test/**'],
     preprocessors: {
       'test/**': ['webpack', 'sourcemap']
