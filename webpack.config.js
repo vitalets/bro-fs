@@ -11,6 +11,7 @@ module.exports = {
     libraryTarget: 'umd',
     library: 'fs',
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {
