@@ -13,7 +13,7 @@
   "bugs": {
     "url": "https://github.com/vitalets/bro-fs/issues"
   },
-  "main": "dist/bro-fs.min.js",
+  "main": "dist/bro-fs.js",
   "scripts": {
     "dev": "karma start",
     "serve": "http-server docs -c-1",
