@@ -76,7 +76,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 /**
  * Utils
@@ -84,28 +87,30 @@ return /******/ (function(modules) { // webpackBootstrap
 
 exports.promiseCall = function (obj, method) {
   if (!obj) {
-    throw new Error(`Can't call promisified method '${method}' of ${obj}`);
+    throw new Error('Can\'t call promisified method \'' + method + '\' of ' + obj);
   }
-  const args = [].slice.call(arguments, 2);
-  return new Promise((resolve, reject) => {
+  var args = [].slice.call(arguments, 2);
+  return new Promise(function (resolve, reject) {
     // create error before call to capture stack
-    const errback = getErrback(new Error(), method, args, reject);
-    const fullArgs = args.concat([resolve, errback]);
+    var errback = getErrback(new Error(), method, args, reject);
+    var fullArgs = args.concat([resolve, errback]);
     return obj[method].apply(obj, fullArgs);
   });
 };
 
 exports.parsePath = function (path) {
-  const parts = exports.splitPath(path);
-  const fileName = parts.pop();
-  const dirPath = parts.join('/');
-  return {dirPath, fileName};
+  var parts = exports.splitPath(path);
+  var fileName = parts.pop();
+  var dirPath = parts.join('/');
+  return { dirPath: dirPath, fileName: fileName };
 };
 
-exports.splitPath = function (path = '') {
+exports.splitPath = function () {
+  var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
   path = path.replace(/^\.\//, ''); // remove './' at start
   if (path.length > 1 && path.endsWith('/')) {
-    throw new Error(`Path can not end with '/'`);
+    throw new Error('Path can not end with \'/\'');
   }
   return path.split('/').filter(Boolean);
 };
@@ -116,22 +121,24 @@ exports.splitPath = function (path = '') {
  */
 function getErrback(err, method, args, reject) {
   return function (e) {
-    let argsStr = '';
+    var argsStr = '';
     try {
       argsStr = JSON.stringify(args);
     } catch (ex) {
       argsStr = args.join(', ');
     }
     err.name = e.name;
-    err.message = `${e.message} Call: ${method}(${argsStr})`;
+    err.message = e.message + ' Call: ' + method + '(' + argsStr + ')';
     reject(err);
   };
 }
 
-
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 /**
  * Errors
@@ -145,17 +152,19 @@ exports.isTypeMismatchError = function (e) {
   return e && e.name === 'TypeMismatchError';
 };
 
-
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 /**
  * Store link to fs root (singleton)
  */
 
-let root = null;
-let type = null;
+var root = null;
+var type = null;
 
 exports.get = function () {
   if (!root) {
@@ -174,18 +183,20 @@ exports.getType = function () {
   return type;
 };
 
-
 /***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 /**
  * Operations with directories
  */
 
-const utils = __webpack_require__(0);
-const errors = __webpack_require__(1);
-const root = __webpack_require__(2);
+var utils = __webpack_require__(0);
+var errors = __webpack_require__(1);
+var root = __webpack_require__(2);
 
 /**
  * Returns DirectoryEntry by path
@@ -196,20 +207,20 @@ const root = __webpack_require__(2);
  * @param {Boolean} options.create
  * @returns {Promise}
  */
-exports.get = function (path, options = {}) {
+exports.get = function (path) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
   if (path && typeof path !== 'string') {
-    return path.isDirectory
-      ? Promise.resolve(path)
-      : Promise.reject(new DOMError('TypeMismatchError', 'Expected directory but got file'));
+    return path.isDirectory ? Promise.resolve(path) : Promise.reject(new DOMError('TypeMismatchError', 'Expected directory but got file'));
   }
-  const parts = utils.splitPath(path);
-  return parts.reduce((res, dirName) => {
-    return res.then(dir => {
-      let task = getChildDir(dir, dirName);
+  var parts = utils.splitPath(path);
+  return parts.reduce(function (res, dirName) {
+    return res.then(function (dir) {
+      var task = getChildDir(dir, dirName);
       if (options.create) {
-        task = task.catch(e => errors.isNotFoundError(e)
-          ? createChildDir(dir, dirName)
-          : Promise.reject(e));
+        task = task.catch(function (e) {
+          return errors.isNotFoundError(e) ? createChildDir(dir, dirName) : Promise.reject(e);
+        });
       }
       return task;
     });
@@ -222,7 +233,7 @@ exports.get = function (path, options = {}) {
  * @param {Object} dir
  */
 exports.read = function (dir) {
-  return utils.promiseCall(dir.createReader(), 'readEntries')
+  return utils.promiseCall(dir.createReader(), 'readEntries');
 };
 
 /**
@@ -232,45 +243,49 @@ exports.read = function (dir) {
  * @returns {Promise<Array>}
  */
 exports.readDeep = function (dir) {
-  return exports.read(dir)
-    .then(entries => {
-      const tasks = entries.map(entry => {
-        if (entry.isDirectory) {
-          return exports.readDeep(entry)
-            .then(subEntries => Object.assign(entry, {children: subEntries}))
-        } else {
-          return Promise.resolve(entry);
-        }
-      });
-      return Promise.all(tasks);
+  return exports.read(dir).then(function (entries) {
+    var tasks = entries.map(function (entry) {
+      if (entry.isDirectory) {
+        return exports.readDeep(entry).then(function (subEntries) {
+          return Object.assign(entry, { children: subEntries });
+        });
+      } else {
+        return Promise.resolve(entry);
+      }
     });
+    return Promise.all(tasks);
+  });
 };
 
 function createChildDir(parent, dirName) {
-  return utils.promiseCall(parent, 'getDirectory', dirName, {create: true, exclusive: true});
+  return utils.promiseCall(parent, 'getDirectory', dirName, { create: true, exclusive: true });
 }
 
 function getChildDir(parent, dirName) {
-  return utils.promiseCall(parent, 'getDirectory', dirName, {create: false});
+  return utils.promiseCall(parent, 'getDirectory', dirName, { create: false });
 }
-
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 /**
  * HTML5 Filesystem API
  * @module fs
  */
 
-const utils = __webpack_require__(0);
-const errors = __webpack_require__(1);
-const root = __webpack_require__(2);
-const file = __webpack_require__(5);
-const directory = __webpack_require__(3);
-const stat = __webpack_require__(6);
-const quota = __webpack_require__(7);
+var utils = __webpack_require__(0);
+var errors = __webpack_require__(1);
+var root = __webpack_require__(2);
+var file = __webpack_require__(5);
+var directory = __webpack_require__(3);
+var stat = __webpack_require__(6);
+var quota = __webpack_require__(7);
 
 /**
  * Is filesystem API supported by current browser
@@ -291,21 +306,23 @@ exports.isSupported = function () {
  * (`false` for Chrome extensions with `unlimitedStorage` permission)
  * @returns {Promise}
  */
-exports.init = function (options = {}) {
-  const type = options.hasOwnProperty('type') ? options.type : window.PERSISTENT;
-  const bytes = options.bytes || 1024 * 1024;
+exports.init = function () {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  var type = options.hasOwnProperty('type') ? options.type : window.PERSISTENT;
+  var bytes = options.bytes || 1024 * 1024;
   assertType(type);
-  const requestQuota = type === window.PERSISTENT
-    ? (options.requestQuota === undefined ? true : options.requestQuota)
-    : false;
-  return Promise.resolve()
-    .then(() => requestQuota ? quota.requestPersistent(bytes) : bytes)
-    // webkitRequestFileSystem always returns fs even if quota not granted
-    .then(grantedBytes => utils.promiseCall(window, 'webkitRequestFileSystem', type, grantedBytes))
-    .then(fs => {
-      root.set(fs.root, type);
-      return fs;
-    });
+  var requestQuota = type === window.PERSISTENT ? options.requestQuota === undefined ? true : options.requestQuota : false;
+  return Promise.resolve().then(function () {
+    return requestQuota ? quota.requestPersistent(bytes) : bytes;
+  })
+  // webkitRequestFileSystem always returns fs even if quota not granted
+  .then(function (grantedBytes) {
+    return utils.promiseCall(window, 'webkitRequestFileSystem', type, grantedBytes);
+  }).then(function (fs) {
+    root.set(fs.root, type);
+    return fs;
+  });
 };
 
 /**
@@ -334,9 +351,12 @@ exports.getRoot = function () {
  * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL
  * @returns {Promise<String>}
  */
-exports.readFile = function (path, options = {}) {
-  return file.get(path)
-    .then(fileEntry => file.read(fileEntry, options));
+exports.readFile = function (path) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  return file.get(path).then(function (fileEntry) {
+    return file.read(fileEntry, options);
+  });
 };
 
 /**
@@ -347,8 +367,9 @@ exports.readFile = function (path, options = {}) {
  * @returns {Promise}
  */
 exports.writeFile = function (path, data) {
-  return file.get(path, {create: true, overwrite: true})
-    .then(fileEntry => file.write(fileEntry, data, {append: false}));
+  return file.get(path, { create: true, overwrite: true }).then(function (fileEntry) {
+    return file.write(fileEntry, data, { append: false });
+  });
 };
 
 /**
@@ -359,8 +380,9 @@ exports.writeFile = function (path, data) {
  * @returns {Promise}
  */
 exports.appendFile = function (path, data) {
-  return file.get(path, {create: true, overwrite: false})
-    .then(fileEntry => file.write(fileEntry, data, {append: true}));
+  return file.get(path, { create: true, overwrite: false }).then(function (fileEntry) {
+    return file.write(fileEntry, data, { append: true });
+  });
 };
 
 /**
@@ -370,13 +392,11 @@ exports.appendFile = function (path, data) {
  * @returns {Promise}
  */
 exports.unlink = function (path) {
-  return file.get(path)
-    .then(
-      fileEntry => utils.promiseCall(fileEntry, 'remove'),
-      e => errors.isNotFoundError(e)
-        ? Promise.resolve(false)
-        : Promise.reject(e)
-    );
+  return file.get(path).then(function (fileEntry) {
+    return utils.promiseCall(fileEntry, 'remove');
+  }, function (e) {
+    return errors.isNotFoundError(e) ? Promise.resolve(false) : Promise.reject(e);
+  });
 };
 
 /**
@@ -388,7 +408,9 @@ exports.unlink = function (path) {
  * @param {Boolean} [options.create=false] create missing directories
  * @returns {Promise<FileSystemEntry>}
  */
-exports.rename = function (oldPath, newPath, options = {}) {
+exports.rename = function (oldPath, newPath) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
   return moveOrCopy(oldPath, newPath, 'moveTo', options);
 };
 
@@ -401,7 +423,9 @@ exports.rename = function (oldPath, newPath, options = {}) {
  * @param {Boolean} [options.create=false] create missing directories
  * @returns {Promise<FileSystemEntry>}
  */
-exports.copy = function (oldPath, newPath, options = {}) {
+exports.copy = function (oldPath, newPath) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
   return moveOrCopy(oldPath, newPath, 'copyTo', options);
 };
 
@@ -412,15 +436,11 @@ exports.copy = function (oldPath, newPath, options = {}) {
  * @returns {Promise}
  */
 exports.rmdir = function (path) {
-  return directory.get(path)
-    .then(
-      dir => dir === root.get()
-        ? Promise.reject('Can not remove root. Use clear() to clear fs.')
-        : utils.promiseCall(dir, 'removeRecursively'),
-      e => errors.isNotFoundError(e)
-        ? Promise.resolve(false)
-        : Promise.reject(e)
-    )
+  return directory.get(path).then(function (dir) {
+    return dir === root.get() ? Promise.reject('Can not remove root. Use clear() to clear fs.') : utils.promiseCall(dir, 'removeRecursively');
+  }, function (e) {
+    return errors.isNotFoundError(e) ? Promise.resolve(false) : Promise.reject(e);
+  });
 };
 
 /**
@@ -430,7 +450,7 @@ exports.rmdir = function (path) {
  * @returns {Promise<FileSystemDirectoryEntry>}
  */
 exports.mkdir = function (path) {
-  return directory.get(path, {create: true});
+  return directory.get(path, { create: true });
 };
 
 /**
@@ -440,11 +460,11 @@ exports.mkdir = function (path) {
  * @returns {Promise<Boolean>}
  */
 exports.exists = function (path) {
-  return exports.getEntry(path)
-    .then(() => true, e => errors.isNotFoundError(e)
-      ? false
-      : Promise.reject(e)
-    );
+  return exports.getEntry(path).then(function () {
+    return true;
+  }, function (e) {
+    return errors.isNotFoundError(e) ? false : Promise.reject(e);
+  });
 };
 
 /**
@@ -454,8 +474,9 @@ exports.exists = function (path) {
  * @returns {Promise<StatObject>}
  */
 exports.stat = function (path) {
-  return exports.getEntry(path)
-    .then(entry => stat.get(entry));
+  return exports.getEntry(path).then(function (entry) {
+    return stat.get(entry);
+  });
 };
 
 /**
@@ -466,12 +487,12 @@ exports.stat = function (path) {
  * @param {Boolean} [options.deep=false] read recursively and attach data as `children` property
  * @returns {Promise<Array<FileSystemEntry>>}
  */
-exports.readdir = function (path, options = {}) {
-  return directory.get(path)
-    .then(dir => options.deep
-      ? directory.readDeep(dir)
-      : directory.read(dir)
-    )
+exports.readdir = function (path) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  return directory.get(path).then(function (dir) {
+    return options.deep ? directory.readDeep(dir) : directory.read(dir);
+  });
 };
 
 /**
@@ -479,14 +500,12 @@ exports.readdir = function (path, options = {}) {
  * @returns {Promise}
  */
 exports.clear = function () {
-  return exports.readdir('/')
-    .then(entries => {
-      const tasks = entries.map(entry => entry.isDirectory
-        ? utils.promiseCall(entry, 'removeRecursively')
-        : utils.promiseCall(entry, 'remove')
-      );
-      return Promise.all(tasks);
+  return exports.readdir('/').then(function (entries) {
+    var tasks = entries.map(function (entry) {
+      return entry.isDirectory ? utils.promiseCall(entry, 'removeRecursively') : utils.promiseCall(entry, 'remove');
     });
+    return Promise.all(tasks);
+  });
 };
 
 /**
@@ -496,8 +515,9 @@ exports.clear = function () {
  * @returns {String}
  */
 exports.getUrl = function (path) {
-  return exports.getEntry(path)
-    .then(entry => entry.toURL())
+  return exports.getEntry(path).then(function (entry) {
+    return entry.toURL();
+  });
 };
 
 /**
@@ -507,47 +527,49 @@ exports.getUrl = function (path) {
  * @returns {Promise<FileSystemEntry>}
  */
 exports.getEntry = function (path) {
-  return file.get(path)
-    .catch(e => errors.isTypeMismatchError(e)
-      ? directory.get(path)
-      : Promise.reject(e)
-    );
+  return file.get(path).catch(function (e) {
+    return errors.isTypeMismatchError(e) ? directory.get(path) : Promise.reject(e);
+  });
 };
 
 function moveOrCopy(oldPath, newPath, method, options) {
   if (oldPath === newPath) {
     return Promise.resolve();
   }
-  const {
-    dirPath: newParentDirPath,
-    fileName: newName,
-  } = utils.parsePath(newPath);
-  return Promise.all([
-    exports.getEntry(oldPath),
-    directory.get(newParentDirPath, options)
-  ]).then(([enrty, newParent]) => {
+
+  var _utils$parsePath = utils.parsePath(newPath),
+      newParentDirPath = _utils$parsePath.dirPath,
+      newName = _utils$parsePath.fileName;
+
+  return Promise.all([exports.getEntry(oldPath), directory.get(newParentDirPath, options)]).then(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        enrty = _ref2[0],
+        newParent = _ref2[1];
+
     return utils.promiseCall(enrty, method, newParent, newName);
   });
 }
 
 function assertType(type) {
   if (type !== window.PERSISTENT && type !== window.TEMPORARY) {
-    throw new Error(`Unknown storage type ${type}`);
+    throw new Error('Unknown storage type ' + type);
   }
 }
-
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+
 /**
  * Operations with files
  */
 
-const utils = __webpack_require__(0);
-const errors = __webpack_require__(1);
-const directory = __webpack_require__(3);
+var utils = __webpack_require__(0);
+var errors = __webpack_require__(1);
+var directory = __webpack_require__(3);
 
 /**
  * Returns FileEntry by path
@@ -559,29 +581,32 @@ const directory = __webpack_require__(3);
  * @param {Boolean} [options.overwrite]
  * @returns {Promise}
  */
-exports.get = function (path, options = {}) {
+exports.get = function (path) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
   if (path && typeof path !== 'string') {
-    return path.isFile
-      ? Promise.resolve(path)
-      : Promise.reject(new DOMError('TypeMismatchError', 'Expected file but got directory'));
+    return path.isFile ? Promise.resolve(path) : Promise.reject(new DOMError('TypeMismatchError', 'Expected file but got directory'));
   }
-  const {dirPath, fileName} = utils.parsePath(path);
-  return Promise.resolve()
-    .then(() => directory.get(dirPath, options))
-    .then(dir => {
-      if (options.create) {
-        if (options.overwrite) {
-          return createChildFile(dir, fileName);
-        } else {
-          return getChildFile(dir, fileName)
-            .catch(e => errors.isNotFoundError(e)
-              ? createChildFile(dir, fileName)
-              : Promise.reject(e))
-        }
+
+  var _utils$parsePath = utils.parsePath(path),
+      dirPath = _utils$parsePath.dirPath,
+      fileName = _utils$parsePath.fileName;
+
+  return Promise.resolve().then(function () {
+    return directory.get(dirPath, options);
+  }).then(function (dir) {
+    if (options.create) {
+      if (options.overwrite) {
+        return createChildFile(dir, fileName);
       } else {
-        return getChildFile(dir, fileName);
+        return getChildFile(dir, fileName).catch(function (e) {
+          return errors.isNotFoundError(e) ? createChildFile(dir, fileName) : Promise.reject(e);
+        });
       }
-    });
+    } else {
+      return getChildFile(dir, fileName);
+    }
+  });
 };
 
 /**
@@ -594,30 +619,32 @@ exports.get = function (path, options = {}) {
  * @param {String} [options.type] mimetype
  * @returns {Promise}
  */
-exports.write = function (fileEntry, data, options = {}) {
-  return utils.promiseCall(fileEntry, 'createWriter')
-    .then(fileWriter => {
-      return new Promise((resolve, reject) => {
-        if (options.append) {
-          fileWriter.seek(fileWriter.length);
-          fileWriter.onwriteend = resolve;
-        } else {
-          let truncated = false;
-          fileWriter.onwriteend = function () {
-            if (!truncated) {
-              truncated = true;
-              this.truncate(this.position);
-            } else {
-              resolve();
-            }
-          };
-        }
-        fileWriter.onerror = reject;
-        const blob = new Blob([data], {type: getMimeTypeByData(data)});
-        fileWriter.write(blob);
-      });
-    })
-    .then(() => fileEntry)
+exports.write = function (fileEntry, data) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  return utils.promiseCall(fileEntry, 'createWriter').then(function (fileWriter) {
+    return new Promise(function (resolve, reject) {
+      if (options.append) {
+        fileWriter.seek(fileWriter.length);
+        fileWriter.onwriteend = resolve;
+      } else {
+        var truncated = false;
+        fileWriter.onwriteend = function () {
+          if (!truncated) {
+            truncated = true;
+            this.truncate(this.position);
+          } else {
+            resolve();
+          }
+        };
+      }
+      fileWriter.onerror = reject;
+      var blob = new Blob([data], { type: getMimeTypeByData(data) });
+      fileWriter.write(blob);
+    });
+  }).then(function () {
+    return fileEntry;
+  });
 };
 
 /**
@@ -628,17 +655,22 @@ exports.write = function (fileEntry, data, options = {}) {
  * @param {String} [options.type] how content should be read
  * @returns {Promise<String>}
  */
-exports.read = function (fileEntry, options = {}) {
-  return utils.promiseCall(fileEntry, 'file')
-    .then(file => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(reader.error);
-        // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
-        readAs(options.type, reader, file);
-      });
+exports.read = function (fileEntry) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  return utils.promiseCall(fileEntry, 'file').then(function (file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        return resolve(reader.result);
+      };
+      reader.onerror = function () {
+        return reject(reader.error);
+      };
+      // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
+      readAs(options.type, reader, file);
     });
+  });
 };
 
 function getMimeTypeByData(data) {
@@ -664,23 +696,25 @@ function readAs(type, reader, file) {
 }
 
 function createChildFile(parent, fileName) {
-  return utils.promiseCall(parent, 'getFile', fileName, {create: true, exclusive: false});
+  return utils.promiseCall(parent, 'getFile', fileName, { create: true, exclusive: false });
 }
 
 function getChildFile(parent, fileName) {
-  return utils.promiseCall(parent, 'getFile', fileName, {create: false});
+  return utils.promiseCall(parent, 'getFile', fileName, { create: false });
 }
-
 
 /***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+
 /**
  * Stat for file or directory
  */
 
-const utils = __webpack_require__(0);
+var utils = __webpack_require__(0);
 
 /**
  * Gets stat info
@@ -689,53 +723,48 @@ const utils = __webpack_require__(0);
  * @returns {Promise<StatObject>}
  */
 exports.get = function (entry) {
-  return utils.promiseCall(entry, 'getMetadata')
-    .then(metadata => {
-      return {
-        isFile: entry.isFile,
-        isDirectory: entry.isDirectory,
-        name: entry.name,
-        fullPath: entry.fullPath,
-        modificationTime: metadata.modificationTime,
-        size: metadata.size,
-      };
-    })
+  return utils.promiseCall(entry, 'getMetadata').then(function (metadata) {
+    return {
+      isFile: entry.isFile,
+      isDirectory: entry.isDirectory,
+      name: entry.name,
+      fullPath: entry.fullPath,
+      modificationTime: metadata.modificationTime,
+      size: metadata.size
+    };
+  });
 };
-
 
 /***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+
 /**
  * Requesting quota
  */
 
-const utils = __webpack_require__(0);
+var utils = __webpack_require__(0);
 
 exports.requestPersistent = function (bytes) {
-  const storage = getStorageByType(window.PERSISTENT);
-  return utils.promiseCall(storage, 'requestQuota', bytes)
-    .then(grantedBytes => grantedBytes > 0
-      ? Promise.resolve(grantedBytes)
-      : Promise.reject('Quota not granted')
-    );
+  var storage = getStorageByType(window.PERSISTENT);
+  return utils.promiseCall(storage, 'requestQuota', bytes).then(function (grantedBytes) {
+    return grantedBytes > 0 ? Promise.resolve(grantedBytes) : Promise.reject('Quota not granted');
+  });
 };
 
 exports.usage = function (type) {
-  const storage = getStorageByType(type);
-  return utils.promiseCall(storage, 'queryUsageAndQuota')
-    .then((usedBytes, grantedBytes) => {
-      return {usedBytes, grantedBytes};
-    });
+  var storage = getStorageByType(type);
+  return utils.promiseCall(storage, 'queryUsageAndQuota').then(function (usedBytes, grantedBytes) {
+    return { usedBytes: usedBytes, grantedBytes: grantedBytes };
+  });
 };
 
 function getStorageByType(type) {
-  return type === window.PERSISTENT
-    ? navigator.webkitPersistentStorage
-    : navigator.webkitTemporaryStorage;
+  return type === window.PERSISTENT ? navigator.webkitPersistentStorage : navigator.webkitTemporaryStorage;
 }
-
 
 /***/ })
 /******/ ]);
