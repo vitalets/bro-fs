@@ -1,8 +1,9 @@
 # bro-fs
 
 [![Build Status](https://travis-ci.org/vitalets/bro-fs.svg?branch=master)](https://travis-ci.org/vitalets/bro-fs)
-[![Sauce Test Status](https://saucelabs.com/buildstatus/autovit)](https://saucelabs.com/u/autovit)
-[![GitHub version](https://badge.fury.io/gh/vitalets%2Fbro-fs.svg)](https://github.com/vitalets/bro-fs/releases/latest)
+[![Sauce Test Status](https://saucelabs.com/buildstatus/browserfilesystem)](https://saucelabs.com/u/browserfilesystem)
+[![npm](https://img.shields.io/npm/v/bro-fs.svg)](https://www.npmjs.com/package/bro-fs)
+[![license](https://img.shields.io/npm/l/bro-fs.svg)](https://www.npmjs.com/package/bro-fs)
 
 Promise-based wrapper over [HTML5 Filesystem API](https://dev.w3.org/2009/dap/file-system/file-dir-sys.html)
 allowing to work with sandboxed filesystem in browser.  
@@ -10,7 +11,7 @@ API is similar to [Node.js fs module](https://nodejs.org/api/fs.html) with some 
 Currently it is supported [only in Chrome](https://developer.mozilla.org/en-US/docs/Web/API/FileSystem#Browser_compatibility). 
 
 Tested in:  
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/autovit.svg)](https://saucelabs.com/u/autovit)
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/browserfilesystem.svg)](https://saucelabs.com/u/browserfilesystem)
 
 ## Live demo & Docs
 * [Demo](https://vitalets.github.io/bro-fs/demo/)
