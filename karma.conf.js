@@ -1,6 +1,8 @@
 
 const path = require('path');
 
+const srcPath = process.env.SRC_PATH || './src';
+
 module.exports = function (config) {
   config.set({
     browsers: [
@@ -33,7 +35,7 @@ module.exports = function (config) {
       devtool: 'inline-source-map',
       resolve: {
         alias: {
-          'bro-fs': path.resolve(process.env.TEST_DIR || './src'),
+          'bro-fs': path.resolve(srcPath),
         }
       },
     },

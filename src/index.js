@@ -254,7 +254,7 @@ exports.getEntry = function (path) {
 };
 
 function moveOrCopy(oldPath, newPath, method, options) {
-  if (oldPath === newPath) {
+  if (oldPath === newPath) { // runtyper-disable-line
     return Promise.resolve();
   }
   const {

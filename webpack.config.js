@@ -3,11 +3,14 @@ const path = require('path');
 const webpack = require('webpack');
 const packageJson = require('./package');
 
+const outDir = process.env.RUNTYPER ? 'dist-runtyper' : 'dist';
+const outFile = `bro-fs${process.env.NODE_ENV === 'production' ? '.min' : ''}.js`;
+
 module.exports = {
   entry: './src',
   output: {
-    path: path.resolve('dist'),
-    filename: `bro-fs${process.env.NODE_ENV === 'production' ? '.min' : ''}.js`,
+    path: path.resolve(outDir),
+    filename: outFile,
     libraryTarget: 'umd',
     library: 'fs',
   },
@@ -20,7 +23,12 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env']
+            presets: ['env'],
+            plugins: process.env.RUNTYPER ? [
+              ['babel-plugin-runtyper', {
+                warnLevel: 'break'
+              }]
+            ] : []
           }
         }
       }
