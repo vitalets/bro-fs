@@ -68,6 +68,7 @@
     "filesystem",
     "html5-fs",
     "html5-filesystem",
+    "html5-filesystem-api",
     "browser-fs",
     "browser-filesystem",
     "web-fs",
