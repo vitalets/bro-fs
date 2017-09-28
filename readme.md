@@ -8,7 +8,7 @@
 Promise-based wrapper over [HTML5 Filesystem API](https://dev.w3.org/2009/dap/file-system/file-dir-sys.html)
 allowing to work with sandboxed filesystem in browser.  
 API is similar to [Node.js fs module](https://nodejs.org/api/fs.html) with some extra sugar.
-Currently it is supported [only in Chrome](https://developer.mozilla.org/en-US/docs/Web/API/FileSystem#Browser_compatibility). 
+Currently it is supported [only by Chrome](https://developer.mozilla.org/en-US/docs/Web/API/FileSystem#Browser_compatibility). 
 
 Tested in:  
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/browserfilesystem.svg)](https://saucelabs.com/u/browserfilesystem)
