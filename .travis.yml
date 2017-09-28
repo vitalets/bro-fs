@@ -3,10 +3,11 @@ language: node_js
 node_js:
   - '6.3'
 
-script: npm run test-sauce
+script: npm run ci
 
-before_deploy:
-  - npm run dist
+# ./dist/bro-fs.js already created in `npm run ci`
+# before_deploy:
+#   - npm run build
 
 deploy:
   provider: releases

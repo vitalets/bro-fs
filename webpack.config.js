@@ -1,11 +1,12 @@
 
+const path = require('path');
 const webpack = require('webpack');
 const packageJson = require('./package');
 
 module.exports = {
   entry: './src',
   output: {
-    path: 'dist',
+    path: path.resolve('dist'),
     filename: 'bro-fs.js',
     libraryTarget: 'umd',
     library: 'fs',

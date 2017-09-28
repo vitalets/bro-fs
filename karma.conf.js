@@ -1,3 +1,6 @@
+
+const path = require('path');
+
 module.exports = function (config) {
   config.set({
     browsers: [
@@ -17,13 +20,22 @@ module.exports = function (config) {
       },
     },
     */
-    frameworks: ['mocha', 'chai'],
-    files: ['test/**'],
+    frameworks: ['mocha'],
+    files: [
+      'test/setup.js',
+      'test/hooks.js',
+      'test/specs/**',
+    ],
     preprocessors: {
       'test/**': ['webpack', 'sourcemap']
     },
     webpack: {
-      devtool: 'inline-source-map'
+      devtool: 'inline-source-map',
+      resolve: {
+        alias: {
+          'bro-fs': path.resolve(process.env.TEST_DIR || './src'),
+        }
+      },
     },
     autoWatch: true,
     singleRun: false,
