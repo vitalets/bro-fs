@@ -1,3 +1,5 @@
+// Sauce platform configurator:
+// https://wiki.saucelabs.com/display/DOCS/Platform+Configurator
 
 const baseFn = require('./karma.conf');
 
@@ -27,7 +29,7 @@ module.exports = function (config) {
     sl_chrome_osx10: {
       base: 'SauceLabs',
       browserName: 'chrome',
-      platform: 'Windows 7',
+      platform: 'macOS 10.12',
       version: 'latest'
     },
     sl_chrome_win7_beta: {
@@ -42,14 +44,10 @@ module.exports = function (config) {
     sauceLabs: {
       testName: 'bro-fs',
       recordScreenshots: false,
-      connectOptions: {
-        port: 5757,
-        // logfile: 'sauce_connect.log'
-      },
       public: 'public'
     },
     // Increase timeout in case connection in CI is slow
-    captureTimeout: 120000,
+    captureTimeout: 120 * 1000,
     customLaunchers: customLaunchers,
     browsers: Object.keys(customLaunchers),
     reporters: ['dots', 'saucelabs'],
