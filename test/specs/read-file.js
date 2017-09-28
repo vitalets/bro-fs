@@ -44,7 +44,6 @@ describe('read file', function () {
         assert.equal(e.name, 'NotFoundError');
         assert.include(e.message, 'a.txt');
         assert.include(e.stack, 'a.txt');
-        assert.include(e.stack, 'getChildFile');
       })
   });
 

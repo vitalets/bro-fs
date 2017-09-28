@@ -51,7 +51,6 @@ describe('readdir', function () {
         assert.equal(e.name, 'NotFoundError');
         assert.include(e.message, 'mydir');
         assert.include(e.stack, 'mydir');
-        assert.include(e.stack, 'getChildDir');
       })
   });
 

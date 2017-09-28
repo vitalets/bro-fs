@@ -13,17 +13,19 @@
   "bugs": {
     "url": "https://github.com/vitalets/bro-fs/issues"
   },
-  "main": "src/index.js",
+  "main": "dist/bro-fs.min.js",
   "scripts": {
     "dev": "karma start",
     "serve": "http-server docs -c-1",
     "code": "npm run eslint",
     "eslint": "eslint src test karma.*.js",
     "test": "karma start --single-run",
-    "test-dist": "TEST_DIR=./dist/bro-fs npm t",
+    "test-dist": "TEST_DIR=. npm t",
     "test-sauce": "karma start karma-sauce.conf.js",
-    "build": "webpack",
-    "ci": "npm run code && npm run build && TEST_DIR=./dist/bro-fs npm run test-sauce",
+    "build-dev": "webpack",
+    "build-min": "NODE_ENV=production webpack -p",
+    "build": "run-s build-dev build-min",
+    "ci": "npm run code && npm run build && TEST_DIR=. npm run test-sauce",
     "docs": "rimraf 'docs/!(demo)' && jsdoc -c ./jsdoc.json",
     "demo": "cp dist/bro-fs.js docs/demo/bro-fs.js",
     "commit-docs": "git add -A docs && (git diff-index --quiet HEAD -- docs || git commit -m'docs' --no-verify)",
@@ -32,10 +34,14 @@
     "release": "npm version $VER && npm publish",
     "release-patch": "VER=patch npm run release",
     "release-minor": "VER=minor npm run release",
+    "diff": "git diff -- . ':!package-lock.json'",
     "precommit": "npm run code",
     "prepush": "npm run code && npm test"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chai-shallow-deep-equal": "^1.4.6",
