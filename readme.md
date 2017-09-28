@@ -54,7 +54,7 @@ Coming (draft):
  * [https://w3c.github.io/filesystem-api](https://w3c.github.io/filesystem-api)
  
 Discussion:  
- * [https://github.com/w3c/filesystem-api/issues/8](https://w3c.github.io/filesystem-api)
+ * [https://github.com/w3c/filesystem-api/issues/8](https://github.com/w3c/filesystem-api/issues/8)
  
 ## Similar packages
 * [filer.js](https://www.npmjs.com/package/filer.js) - unix-like commands, callbacks
