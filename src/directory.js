@@ -66,7 +66,7 @@ exports.readDeep = function (dir) {
 };
 
 function createChildDir(parent, dirName) {
-  return utils.promiseCall(parent, 'getDirectory', dirName, {create: true, exclusive: true});
+  return utils.promiseCall(parent, 'getDirectory', dirName, {create: true, exclusive: false});
 }
 
 function getChildDir(parent, dirName) {

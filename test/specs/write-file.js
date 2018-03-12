@@ -52,4 +52,19 @@ describe('write file', function () {
       .then(() => assert.eventually.equal(fs.readFile('a/b/c.txt'), 'abc'))
   });
 
+  it('should create files in parallel in the same directory', function() {
+    return Promise.resolve()
+      .then(() => {
+        return Promise.all([
+          fs.writeFile('a/file1.txt', 'abc'),
+          fs.writeFile('a/file2.txt', 'def'),
+        ]);
+      })
+      .then(() => assert.eventually.ok(fs.exists('a')))
+      .then(() => assert.eventually.ok(fs.exists('a/file1.txt')))
+      .then(() => assert.eventually.equal(fs.readFile('a/file1.txt'), 'abc'))
+      .then(() => assert.eventually.ok(fs.exists('a/file2.txt')))
+      .then(() => assert.eventually.equal(fs.readFile('a/file2.txt'), 'def'))
+  });
+
 });
