@@ -1,4 +1,4 @@
-/*! bro-fs v0.2.1 */
+/*! bro-fs v0.2.2 */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -258,7 +258,7 @@ exports.readDeep = function (dir) {
 };
 
 function createChildDir(parent, dirName) {
-  return utils.promiseCall(parent, 'getDirectory', dirName, { create: true, exclusive: true });
+  return utils.promiseCall(parent, 'getDirectory', dirName, { create: true, exclusive: false });
 }
 
 function getChildDir(parent, dirName) {
@@ -534,6 +534,7 @@ exports.getEntry = function (path) {
 
 function moveOrCopy(oldPath, newPath, method, options) {
   if (oldPath === newPath) {
+    // runtyper-disable-line
     return Promise.resolve();
   }
 
