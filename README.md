@@ -28,18 +28,31 @@ Webpack/browserify:
 ```js
 const fs = require('bro-fs');
 
+// with async/await:
+(async function () {
+  await fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024});
+  await fs.mkdir('dir');
+  await fs.writeFile('file.txt', 'hello world');
+  const content = await fs.readFile('file.txt');
+  console.log(content); // => "hello world"
+})();
+
+// OR with .then():
 fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024})
   .then(() => fs.mkdir('dir'))
   .then(() => fs.writeFile('file.txt', 'hello world'))
-
+  .then(() => fs.readFile('file.txt'))
+  .then(content => console.log(content)); // => "hello world"
 ```
+
 Script tag:
 ```html
-<script src="node_modules/bro-fs/dist/bro-fs.js"></script>
+<script src="https://unpkg.com/bro-fs"></script>
 <script>
-    fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024})
-      .then(() => fs.mkdir('dir'))
-      .then(() => fs.writeFile('file.txt', 'hello world'))
+(async function () {
+  await fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024});
+  ...
+})();
 </script>
 ```
 
