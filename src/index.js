@@ -67,10 +67,14 @@ exports.getRoot = function () {
 
 /**
  * Reads file content
+ * 
+ * options.type='Blob' returns a snapshot
+ * 
+ * options.type='MutableFile' returns a real-time reference
  *
  * @param {String|FileSystemFileEntry} path
  * @param {Object} [options]
- * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL
+ * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL|Blob|MutableFile
  * @returns {Promise<String>}
  */
 exports.readFile = function (path, options = {}) {

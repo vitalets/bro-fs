@@ -88,13 +88,19 @@ exports.write = function (fileEntry, data, options = {}) {
 exports.read = function (fileEntry, options = {}) {
   return utils.promiseCall(fileEntry, 'file')
     .then(file => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(reader.error);
-        // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
-        readAs(options.type, reader, file);
-      });
+      if (options.type === 'Blob') {
+        return new Response(file).blob();
+      } else if (options.type === 'MutableFile') {
+        return file;
+      } else {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error);
+          // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
+          readAs(options.type, reader, file);
+        });
+      }
     });
 };
 
