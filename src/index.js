@@ -253,6 +253,26 @@ exports.getEntry = function (path) {
     );
 };
 
+/**
+ * Create a ReadableStream for reading
+ *
+ * @param {String|FileSystemFileEntry} path
+ * @returns {ReadableStream}
+ */
+exports.createReadStream = function (path) {
+  return file.createReadStream(path);
+};
+
+/**
+ * Create a WritableStream for writing
+ *
+ * @param {String|FileSystemFileEntry} path
+ * @returns {WritableStream}
+ */
+exports.createWriteStream = function (path) {
+  return file.createWriteStream(path);
+};
+
 function moveOrCopy(oldPath, newPath, method, options) {
   if (oldPath === newPath) { // runtyper-disable-line
     return Promise.resolve();
