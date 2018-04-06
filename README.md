@@ -13,47 +13,45 @@ Currently it is supported [only by Chrome](https://developer.mozilla.org/en-US/d
 Tested in:  
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/browserfilesystem.svg)](https://saucelabs.com/u/browserfilesystem)
 
-## Live demo & Docs
-* [Demo](https://vitalets.github.io/bro-fs/demo/)
+## Demos
+* [Live Demo](https://vitalets.github.io/bro-fs/demo/)
+* [jsFiddle](https://jsfiddle.net/na0m8om8/3/)
+
+## API
 * [API Documentaion](https://vitalets.github.io/bro-fs/)
 
 ## Install
-```bash
-npm install bro-fs --save
-```
-or download manually [latest release](https://github.com/vitalets/bro-fs/releases/latest).
+* install from npm:
+    ```bash
+    npm install bro-fs
+    ```
+* include directly from CDN via `<script>` tag:
+    ```html
+    <script src="https://unpkg.com/bro-fs"></script>
+    ```
+* download manually the [latest release]((https://github.com/vitalets/bro-fs/releases/latest))
 
 ## Usage
-Webpack/browserify:
+With `async/await`:
 ```js
 const fs = require('bro-fs');
 
-// with async/await:
 (async function () {
   await fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024});
   await fs.mkdir('dir');
-  await fs.writeFile('file.txt', 'hello world');
-  const content = await fs.readFile('file.txt');
+  await fs.writeFile('dir/file.txt', 'hello world');
+  const content = await fs.readFile('dir/file.txt');
   console.log(content); // => "hello world"
 })();
-
-// OR with .then():
-fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024})
-  .then(() => fs.mkdir('dir'))
-  .then(() => fs.writeFile('file.txt', 'hello world'))
-  .then(() => fs.readFile('file.txt'))
-  .then(content => console.log(content)); // => "hello world"
 ```
 
-Script tag:
-```html
-<script src="https://unpkg.com/bro-fs"></script>
-<script>
-(async function () {
-  await fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024});
-  ...
-})();
-</script>
+or with `.then()`:
+```js
+fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024})
+  .then(() => fs.mkdir('dir'))
+  .then(() => fs.writeFile('dir/file.txt', 'hello world'))
+  .then(() => fs.readFile('dir/file.txt'))
+  .then(content => console.log(content)); // => "hello world"
 ```
 
 See more usage examples in [test directory](/test).
