@@ -1,4 +1,4 @@
-/*! bro-fs v0.2.2 */
+/*! bro-fs v0.3.0 */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -85,15 +85,24 @@ return /******/ (function(modules) { // webpackBootstrap
  * Utils
  */
 
+/**
+ * Calls async method of object with convertion callbacks into promise.
+ *
+ * @param {Object} obj
+ * @param {String} method
+ * @returns {Promise} promise resolved with returned value
+ * (or array of values if callback called with more than one arguments)
+ */
 exports.promiseCall = function (obj, method) {
   if (!obj) {
     throw new Error('Can\'t call promisified method \'' + method + '\' of ' + obj);
   }
   var args = [].slice.call(arguments, 2);
   return new Promise(function (resolve, reject) {
+    var callback = getCallback(resolve);
     // create error before call to capture stack
     var errback = getErrback(new Error(), method, args, reject);
-    var fullArgs = args.concat([resolve, errback]);
+    var fullArgs = args.concat([callback, errback]);
     return obj[method].apply(obj, fullArgs);
   });
 };
@@ -114,6 +123,32 @@ exports.splitPath = function () {
   }
   return path.split('/').filter(Boolean);
 };
+
+/**
+ * Create callback. Resolve should always be called with single argument:
+ * - if underling callback called with zero or one argument - resolve call with the same
+ * - if underling callback called with multiple arguments - resolve call with array of arguments
+ *
+ * See: https://github.com/vitalets/bro-fs/issues/7
+ */
+function getCallback(resolve) {
+  return function () {
+    // not leaking arguments copy
+    // see: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+    var i = arguments.length;
+    var args = [];
+    while (i--) {
+      args[i] = arguments[i];
+    }
+    if (args.length === 0) {
+      resolve();
+    } else if (args.length === 1) {
+      resolve(args[0]);
+    } else {
+      resolve(args);
+    }
+  };
+}
 
 /**
  * Convert DOMException to regular error to have normal stack trace
@@ -303,7 +338,7 @@ exports.isSupported = function () {
  * @param {Number} [options.type=window.PERSISTENT] window.PERSISTENT | window.TEMPORARY
  * @param {Number} [options.bytes=1Mb]
  * @param {Boolean} [options.requestQuota=true] show request quota popup for PERSISTENT type.
- * (`false` for Chrome extensions with `unlimitedStorage` permission)
+ * (for Chrome extensions with `unlimitedStorage` permission it is useful to pass options.requestQuota = false)
  * @returns {Promise}
  */
 exports.init = function () {
@@ -312,9 +347,9 @@ exports.init = function () {
   var type = options.hasOwnProperty('type') ? options.type : window.PERSISTENT;
   var bytes = options.bytes || 1024 * 1024;
   assertType(type);
-  var requestQuota = type === window.PERSISTENT ? options.requestQuota === undefined ? true : options.requestQuota : false;
+  var shouldRequestQuota = type === window.PERSISTENT ? options.hasOwnProperty('requestQuota') ? options.requestQuota : true : false;
   return Promise.resolve().then(function () {
-    return requestQuota ? quota.requestPersistent(bytes) : bytes;
+    return shouldRequestQuota ? quota.requestPersistent(bytes) : bytes;
   })
   // webkitRequestFileSystem always returns fs even if quota not granted
   .then(function (grantedBytes) {
@@ -743,22 +778,35 @@ exports.get = function (entry) {
 "use strict";
 
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 /**
  * Requesting quota
  */
 
 var utils = __webpack_require__(0);
 
+/**
+ * Requesting quota is needed only for persistent storage.
+ * See: https://developer.mozilla.org/en-US/docs/Web/API/LocalFileSystem
+ *
+ * @param {Number} bytes
+ * @returns {Promise}
+ */
 exports.requestPersistent = function (bytes) {
   var storage = getStorageByType(window.PERSISTENT);
   return utils.promiseCall(storage, 'requestQuota', bytes).then(function (grantedBytes) {
-    return grantedBytes > 0 ? Promise.resolve(grantedBytes) : Promise.reject('Quota not granted');
+    return grantedBytes > 0 ? grantedBytes : Promise.reject('Quota not granted (requested: ' + bytes + ', granted: ' + grantedBytes + ')');
   });
 };
 
 exports.usage = function (type) {
   var storage = getStorageByType(type);
-  return utils.promiseCall(storage, 'queryUsageAndQuota').then(function (usedBytes, grantedBytes) {
+  return utils.promiseCall(storage, 'queryUsageAndQuota').then(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        usedBytes = _ref2[0],
+        grantedBytes = _ref2[1];
+
     return { usedBytes: usedBytes, grantedBytes: grantedBytes };
   });
 };

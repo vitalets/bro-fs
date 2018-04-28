@@ -54,36 +54,33 @@
 allowing to work with sandboxed filesystem in browser.<br>API is similar to <a href="https://nodejs.org/api/fs.html">Node.js fs module</a> with some extra sugar.
 Currently it is supported <a href="https://developer.mozilla.org/en-US/docs/Web/API/FileSystem#Browser_compatibility">only by Chrome</a>. </p>
 <p>Tested in:<br><a href="https://saucelabs.com/u/browserfilesystem"><img src="https://saucelabs.com/browser-matrix/browserfilesystem.svg" alt="Sauce Test Status"></a></p>
-<h2>Live demo &amp; Docs</h2><ul>
-<li><a href="https://vitalets.github.io/bro-fs/demo/">Demo</a></li>
+<h2>Demos</h2><ul>
+<li><a href="https://vitalets.github.io/bro-fs/demo/">Live Demo</a></li>
+<li><a href="https://jsfiddle.net/na0m8om8/3/">jsFiddle</a></li>
+</ul>
+<h2>API</h2><ul>
 <li><a href="https://vitalets.github.io/bro-fs/">API Documentaion</a></li>
 </ul>
-<h2>Install</h2><pre class="prettyprint source lang-bash"><code>npm install bro-fs --save</code></pre><p>or download manually <a href="https://github.com/vitalets/bro-fs/releases/latest">latest release</a>.</p>
-<h2>Usage</h2><p>Webpack/browserify:</p>
+<h2>Install</h2><ul>
+<li>install from npm:<pre class="prettyprint source lang-bash"><code>  npm install bro-fs</code></pre></li>
+<li>include directly from CDN via <code>&lt;script&gt;</code> tag:<pre class="prettyprint source lang-html"><code>  &lt;script src=&quot;https://unpkg.com/bro-fs&quot;>&lt;/script></code></pre></li>
+<li>download manually the <a href="(https://github.com/vitalets/bro-fs/releases/latest">latest release</a>)</li>
+</ul>
+<h2>Usage</h2><p>With <code>async/await</code>:</p>
 <pre class="prettyprint source lang-js"><code>const fs = require('bro-fs');
 
-// with async/await:
 (async function () {
   await fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024});
   await fs.mkdir('dir');
-  await fs.writeFile('file.txt', 'hello world');
-  const content = await fs.readFile('file.txt');
+  await fs.writeFile('dir/file.txt', 'hello world');
+  const content = await fs.readFile('dir/file.txt');
   console.log(content); // => &quot;hello world&quot;
-})();
-
-// OR with .then():
-fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024})
+})();</code></pre><p>or with <code>.then()</code>:</p>
+<pre class="prettyprint source lang-js"><code>fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024})
   .then(() => fs.mkdir('dir'))
-  .then(() => fs.writeFile('file.txt', 'hello world'))
-  .then(() => fs.readFile('file.txt'))
-  .then(content => console.log(content)); // => &quot;hello world&quot;</code></pre><p>Script tag:</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://unpkg.com/bro-fs&quot;>&lt;/script>
-&lt;script>
-(async function () {
-  await fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024});
-  ...
-})();
-&lt;/script></code></pre><p>See more usage examples in <a href="/test">test directory</a>.</p>
+  .then(() => fs.writeFile('dir/file.txt', 'hello world'))
+  .then(() => fs.readFile('dir/file.txt'))
+  .then(content => console.log(content)); // => &quot;hello world&quot;</code></pre><p>See more usage examples in <a href="/test">test directory</a>.</p>
 <h2>W3C Specs</h2><p>Current:  </p>
 <ul>
 <li><a href="https://dev.w3.org/2009/dap/file-system/file-dir-sys.html">https://dev.w3.org/2009/dap/file-system/file-dir-sys.html</a> (Chrome)</li>
