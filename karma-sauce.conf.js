@@ -14,17 +14,11 @@ module.exports = function (config) {
   // Browsers to run on Sauce Labs
   // Check out https://saucelabs.com/platforms for all browser/OS combos
   var customLaunchers = {
-    sl_chrome_win7: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      platform: 'Windows 7',
-      version: 'latest-2'
-    },
     sl_chrome_win10: {
       base: 'SauceLabs',
       browserName: 'chrome',
       platform: 'Windows 10',
-      version: 'latest-1'
+      version: 'latest'
     },
     sl_chrome_osx10: {
       base: 'SauceLabs',
@@ -32,12 +26,22 @@ module.exports = function (config) {
       platform: 'macOS 10.12',
       version: 'latest'
     },
-    sl_chrome_win7_beta: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      platform: 'Windows 7',
-      version: 'beta'
-    },
+
+    // below does not pass :(
+
+    // sl_chrome_win7: {
+    //   base: 'SauceLabs',
+    //   browserName: 'chrome',
+    //   platform: 'Windows 7',
+    //   version: 'latest'
+    // },
+
+    // sl_chrome_win7_beta: {
+    //   base: 'SauceLabs',
+    //   browserName: 'chrome',
+    //   platform: 'Windows 10',
+    //   version: 'beta'
+    // },
   };
 
   config.set({
