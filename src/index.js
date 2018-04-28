@@ -27,18 +27,18 @@ exports.isSupported = function () {
  * @param {Number} [options.type=window.PERSISTENT] window.PERSISTENT | window.TEMPORARY
  * @param {Number} [options.bytes=1Mb]
  * @param {Boolean} [options.requestQuota=true] show request quota popup for PERSISTENT type.
- * (`false` for Chrome extensions with `unlimitedStorage` permission)
+ * (for Chrome extensions with `unlimitedStorage` permission it is useful to pass options.requestQuota = false)
  * @returns {Promise}
  */
 exports.init = function (options = {}) {
   const type = options.hasOwnProperty('type') ? options.type : window.PERSISTENT;
   const bytes = options.bytes || 1024 * 1024;
   assertType(type);
-  const requestQuota = type === window.PERSISTENT
-    ? (options.requestQuota === undefined ? true : options.requestQuota)
+  const shouldRequestQuota = type === window.PERSISTENT
+    ? (options.hasOwnProperty('requestQuota') ? options.requestQuota : true)
     : false;
   return Promise.resolve()
-    .then(() => requestQuota ? quota.requestPersistent(bytes) : bytes)
+    .then(() => shouldRequestQuota ? quota.requestPersistent(bytes) : bytes)
     // webkitRequestFileSystem always returns fs even if quota not granted
     .then(grantedBytes => utils.promiseCall(window, 'webkitRequestFileSystem', type, grantedBytes))
     .then(fs => {
