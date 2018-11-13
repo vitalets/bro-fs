@@ -68,9 +68,9 @@ exports.getRoot = function () {
 /**
  * Reads file content
  * 
- * options.type='Blob' returns a snapshot
+ * `options.type='Blob'` returns a snapshot
  * 
- * options.type='MutableFile' returns a real-time reference
+ * `options.type='MutableFile'` returns a real-time reference without any r/w lock. **Behavior under race condition is undefined.**
  *
  * @param {String|FileSystemFileEntry} path
  * @param {Object} [options]
