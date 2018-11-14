@@ -89,7 +89,8 @@ exports.read = function (fileEntry, options = {}) {
   return utils.promiseCall(fileEntry, 'file')
     .then(file => {
       if (options.type === 'Blob') {
-        return new Response(file).blob();
+        // see /test/mutable-vs-snapshot.js for why we need to "freeze" a Blob
+        return freezeMutableFile(file);
       } else if (options.type === 'MutableFile') {
         return file;
       } else {
@@ -124,6 +125,14 @@ function readAs(type, reader, file) {
     default:
       return reader.readAsText(file);
   }
+}
+
+function freezeMutableFile(file) {
+  // I tried different APIs, but they either require reading the
+  // entire Blob into a buffer, or do not (deep) clone the Blob
+  // at all. Response is so far the best I can find.
+
+  return new Response(file).blob();
 }
 
 function createChildFile(parent, fileName) {
