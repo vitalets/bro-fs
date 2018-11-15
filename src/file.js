@@ -79,6 +79,10 @@ exports.write = function (fileEntry, data, options = {}) {
 
 /**
  * Reads from fileEntry
+ * 
+ * `options.type='Blob'` returns a snapshot of the file. Slower but safer.
+ * 
+ * `options.type='MutableFile'` returns a real-time reference without any r/w lock. Faster but may have a data race.
  *
  * @param {Object} fileEntry
  * @param {Object} [options]
