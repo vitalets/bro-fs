@@ -66,11 +66,9 @@ exports.getRoot = function () {
 };
 
 /**
- * Reads file content
- * 
- * `options.type='Blob'` returns a snapshot of the file. Slower but safer.
- * 
- * `options.type='File'` returns a real-time reference without any r/w lock. Faster but may have a data race.
+ * Reads file content.
+ * - `options.type='Blob'` returns a immutable snapshot of the file. Slower but safer.
+ * - `options.type='File'` returns a mutable instance of {@link https://developer.mozilla.org/en-US/docs/Web/API/File File}. Faster but may have a data race.
  *
  * @param {String|FileSystemFileEntry} path
  * @param {Object} [options]
