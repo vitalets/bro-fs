@@ -109,6 +109,61 @@ exports.read = function (fileEntry, options = {}) {
     });
 };
 
+/**
+ * Create a ReadableStream from path or fileEntry
+ *
+ * @param {String|FileSystemFileEntry} path
+ * @returns {ReadableStream}
+ */
+exports.createReadStream = function (path) {
+  /* global TransformStream:false */
+  const { readable, writable } = new TransformStream();
+  exports.get(path)
+    .then(fileEntry => utils.promiseCall(fileEntry, 'file'))
+    .then(file => new Response(file).body.pipeTo(writable))
+    .catch(e => writable.abort(e));
+  return readable;
+};
+
+/**
+ * Create a WritableStream from fileEntry
+ *
+ * @param {String|FileSystemFileEntry} path
+ * @param {Object} [options]
+ * @param {Boolean} [options.append]
+ * @param {String} [options.type] mimetype
+ * @returns {WritableStream}
+ */
+exports.createWriteStream = function (path, options = {}) {
+  return new WritableStream({
+    start() {
+      return exports.get(path, { create: true, overwrite: true })
+        .then(fileEntry => utils.promiseCall(fileEntry, 'createWriter'))
+        .then(fileWriter => {
+          this.fileWriter = fileWriter;
+          if (options.append) {
+            fileWriter.seek(fileWriter.length);
+          }
+        })
+    },
+    write(data) {
+      return new Promise((resolve, reject) => {
+        const blob = new Blob([data], { type: getMimeTypeByData(data) });
+        this.fileWriter.onwriteend = resolve;
+        this.fileWriter.onerror = reject;
+        this.fileWriter.write(blob);
+      });
+    },
+    close() {
+      return new Promise((resolve, reject) => {
+        this.fileWriter.onwriteend = resolve;
+        this.fileWriter.onerror = reject;
+        this.fileWriter.truncate(this.fileWriter.position);
+      });
+    }
+  });
+};
+
 function getMimeTypeByData(data) {
   if (typeof data === 'string') {
     return 'text/plain';
