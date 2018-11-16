@@ -2,7 +2,7 @@ describe('mutable vs snapshot', function () {
 
   it('should modify the content of previously created Blob', async function () {
     await fs.writeFile('a.txt', 'abc');
-    const res = await fs.readFile('a.txt', { type: 'MutableFile' });
+    const res = await fs.readFile('a.txt', { type: 'File' });
     await fs.writeFile('a.txt', 'd');
     assert.equal(await new Response(res).text(), 'd');
   });

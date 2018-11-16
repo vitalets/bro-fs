@@ -70,11 +70,11 @@ exports.getRoot = function () {
  * 
  * `options.type='Blob'` returns a snapshot of the file. Slower but safer.
  * 
- * `options.type='MutableFile'` returns a real-time reference without any r/w lock. Faster but may have a data race.
+ * `options.type='File'` returns a real-time reference without any r/w lock. Faster but may have a data race.
  *
  * @param {String|FileSystemFileEntry} path
  * @param {Object} [options]
- * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL|Blob|MutableFile
+ * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL|Blob|File
  * @returns {Promise<String>}
  */
 exports.readFile = function (path, options = {}) {

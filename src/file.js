@@ -82,7 +82,7 @@ exports.write = function (fileEntry, data, options = {}) {
  * 
  * `options.type='Blob'` returns a snapshot of the file. Slower but safer.
  * 
- * `options.type='MutableFile'` returns a real-time reference without any r/w lock. Faster but may have a data race.
+ * `options.type='File'` returns a real-time reference without any r/w lock. Faster but may have a data race.
  *
  * @param {Object} fileEntry
  * @param {Object} [options]
@@ -95,7 +95,7 @@ exports.read = function (fileEntry, options = {}) {
       if (options.type === 'Blob') {
         // see /test/mutable-vs-snapshot.js for why we need to "freeze" a Blob
         return freezeMutableFile(file);
-      } else if (options.type === 'MutableFile') {
+      } else if (options.type === 'File') {
         return file;
       } else {
         return new Promise((resolve, reject) => {
