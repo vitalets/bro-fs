@@ -256,7 +256,7 @@ exports.getEntry = function (path) {
 };
 
 /**
- * Create a ReadableStream for reading
+ * Create a {@link https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream ReadableStream} for reading
  *
  * @param {String|FileSystemFileEntry} path
  * @returns {ReadableStream}
@@ -266,7 +266,7 @@ exports.createReadStream = function (path) {
 };
 
 /**
- * Create a WritableStream for writing
+ * Create a {@link https://developer.mozilla.org/en-US/docs/Web/API/WritableStream WritableStream} for writing
  *
  * @param {String|FileSystemFileEntry} path
  * @returns {WritableStream}

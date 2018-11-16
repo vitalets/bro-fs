@@ -1,4 +1,4 @@
-describe('writ stream', function () {
+describe('write stream', function () {
 
   it('should return WritableStream', async function () {
     await fs.writeFile('a.txt', 'abc');
