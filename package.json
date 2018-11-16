@@ -36,9 +36,13 @@
     "postrelease": "git push --follow-tags --no-verify",
     "release": "npm version $VER && npm publish",
     "release-patch": "VER=patch npm run release",
-    "release-minor": "VER=minor npm run release",
-    "precommit": "npm run code",
-    "prepush": "npm run code && npm test"
+    "release-minor": "VER=minor npm run release"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run code",
+      "pre-push": "npm run code && npm test"
+    }
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
