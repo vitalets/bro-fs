@@ -67,10 +67,14 @@ exports.getRoot = function () {
 
 /**
  * Reads file content
+ * 
+ * `options.type='Blob'` returns a snapshot of the file. Slower but safer.
+ * 
+ * `options.type='File'` returns a real-time reference without any r/w lock. Faster but may have a data race.
  *
  * @param {String|FileSystemFileEntry} path
  * @param {Object} [options]
- * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL
+ * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL|Blob|File
  * @returns {Promise<String>}
  */
 exports.readFile = function (path, options = {}) {

@@ -37,6 +37,22 @@ describe('read file', function () {
       .then(res => assert.equal(res, 'data:text/plain;base64,YWJj'));
   });
 
+  it('should read as blob', function() {
+    return Promise.resolve()
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(() => fs.readFile('a.txt', {type: 'Blob'}))
+      .then(blob => new Response(blob).text())
+      .then(res => assert.equal(res, 'abc'));
+  });
+
+  it('should read as file', function() {
+    return Promise.resolve()
+      .then(() => fs.writeFile('a.txt', 'abc'))
+      .then(() => fs.readFile('a.txt', {type: 'File'}))
+      .then(file => new Response(file).text())
+      .then(res => assert.equal(res, 'abc'));
+  });
+
   it('should reject on non-existing file', function() {
     return Promise.resolve()
       .then(() => fs.readFile('a.txt'))

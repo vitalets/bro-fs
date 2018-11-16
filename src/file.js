@@ -79,6 +79,10 @@ exports.write = function (fileEntry, data, options = {}) {
 
 /**
  * Reads from fileEntry
+ * 
+ * `options.type='Blob'` returns a snapshot of the file. Slower but safer.
+ * 
+ * `options.type='File'` returns a real-time reference without any r/w lock. Faster but may have a data race.
  *
  * @param {Object} fileEntry
  * @param {Object} [options]
@@ -88,13 +92,20 @@ exports.write = function (fileEntry, data, options = {}) {
 exports.read = function (fileEntry, options = {}) {
   return utils.promiseCall(fileEntry, 'file')
     .then(file => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(reader.error);
-        // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
-        readAs(options.type, reader, file);
-      });
+      if (options.type === 'Blob') {
+        // see /test/mutable-vs-snapshot.js for why we need to "freeze" a Blob
+        return freezeMutableFile(file);
+      } else if (options.type === 'File') {
+        return file;
+      } else {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error);
+          // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
+          readAs(options.type, reader, file);
+        });
+      }
     });
 };
 
@@ -118,6 +129,14 @@ function readAs(type, reader, file) {
     default:
       return reader.readAsText(file);
   }
+}
+
+function freezeMutableFile(file) {
+  // I tried different APIs, but they either require reading the
+  // entire Blob into a buffer, or do not (deep) clone the Blob
+  // at all. Response is so far the best I can find.
+
+  return new Response(file).blob();
 }
 
 function createChildFile(parent, fileName) {
