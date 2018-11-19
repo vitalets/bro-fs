@@ -26,7 +26,8 @@ module.exports = {
             presets: ['env'],
             plugins: process.env.RUNTYPER ? [
               ['babel-plugin-runtyper', {
-                warnLevel: 'break'
+                warnLevel: 'break',
+                implicitEqualUndefined: 'allow',
               }]
             ] : []
           }

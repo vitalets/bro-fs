@@ -93,7 +93,7 @@ exports.read = function (fileEntry, options = {}) {
   return utils.promiseCall(fileEntry, 'file')
     .then(file => {
       if (options.type === 'Blob') {
-        // see /test/mutable-vs-snapshot.js for why we need to "freeze" a Blob
+        // see /test/file-vs-blob.js for why we need to "freeze" a Blob
         return freezeMutableFile(file);
       } else if (options.type === 'File') {
         return file;
