@@ -30,6 +30,7 @@
     "docs": "rimraf 'docs/!(demo)' && jsdoc -c ./jsdoc.json",
     "demo": "cp dist/bro-fs.js docs/demo/bro-fs.js",
     "commit-docs": "git add -A docs && (git diff-index --quiet HEAD -- docs || git commit -m'docs' --no-verify)",
+    "add-contribs": "git-authors-cli",
     "prerelease": "run-s code test build test-dist test-runtyper docs demo commit-docs",
     "postrelease": "git push --follow-tags --no-verify",
     "release": "npm version $VER && npm publish",
