@@ -1,4 +1,4 @@
-/*! bro-fs v0.3.0 */
+/*! bro-fs v0.4.0 */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -379,11 +379,13 @@ exports.getRoot = function () {
 };
 
 /**
- * Reads file content
+ * Reads file content.
+ * - `options.type='Blob'` returns a immutable snapshot of the file. Slower but safer.
+ * - `options.type='File'` returns a mutable instance of {@link https://developer.mozilla.org/en-US/docs/Web/API/File File}. Faster but may have a data race.
  *
  * @param {String|FileSystemFileEntry} path
  * @param {Object} [options]
- * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL
+ * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL|Blob|File
  * @returns {Promise<String>}
  */
 exports.readFile = function (path) {
@@ -567,6 +569,26 @@ exports.getEntry = function (path) {
   });
 };
 
+/**
+ * Create a {@link https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream ReadableStream} for reading
+ *
+ * @param {String|FileSystemFileEntry} path
+ * @returns {ReadableStream}
+ */
+exports.createReadStream = function (path) {
+  return file.createReadStream(path);
+};
+
+/**
+ * Create a {@link https://developer.mozilla.org/en-US/docs/Web/API/WritableStream WritableStream} for writing
+ *
+ * @param {String|FileSystemFileEntry} path
+ * @returns {WritableStream}
+ */
+exports.createWriteStream = function (path) {
+  return file.createWriteStream(path);
+};
+
 function moveOrCopy(oldPath, newPath, method, options) {
   if (oldPath === newPath) {
     // runtyper-disable-line
@@ -685,6 +707,10 @@ exports.write = function (fileEntry, data) {
 
 /**
  * Reads from fileEntry
+ * 
+ * `options.type='Blob'` returns a snapshot of the file. Slower but safer.
+ * 
+ * `options.type='File'` returns a real-time reference without any r/w lock. Faster but may have a data race.
  *
  * @param {Object} fileEntry
  * @param {Object} [options]
@@ -695,17 +721,93 @@ exports.read = function (fileEntry) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   return utils.promiseCall(fileEntry, 'file').then(function (file) {
-    return new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-      reader.onload = function () {
-        return resolve(reader.result);
-      };
-      reader.onerror = function () {
-        return reject(reader.error);
-      };
-      // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
-      readAs(options.type, reader, file);
-    });
+    if (options.type === 'Blob') {
+      // see /test/file-vs-blob.js for why we need to "freeze" a Blob
+      return freezeMutableFile(file);
+    } else if (options.type === 'File') {
+      return file;
+    } else {
+      return new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function () {
+          return resolve(reader.result);
+        };
+        reader.onerror = function () {
+          return reject(reader.error);
+        };
+        // see: https://developer.mozilla.org/ru/docs/Web/API/FileReader
+        readAs(options.type, reader, file);
+      });
+    }
+  });
+};
+
+/**
+ * Create a ReadableStream from path or fileEntry
+ *
+ * @param {String|FileSystemFileEntry} path
+ * @returns {ReadableStream}
+ */
+exports.createReadStream = function (path) {
+  /* global TransformStream:false */
+  var _ref = new TransformStream(),
+      readable = _ref.readable,
+      writable = _ref.writable;
+
+  exports.get(path).then(function (fileEntry) {
+    return utils.promiseCall(fileEntry, 'file');
+  }).then(function (file) {
+    return new Response(file).body.pipeTo(writable);
+  }).catch(function (e) {
+    return writable.abort(e);
+  });
+  return readable;
+};
+
+/**
+ * Create a WritableStream from fileEntry
+ *
+ * @param {String|FileSystemFileEntry} path
+ * @param {Object} [options]
+ * @param {Boolean} [options.append]
+ * @param {String} [options.type] mimetype
+ * @returns {WritableStream}
+ */
+exports.createWriteStream = function (path) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  return new WritableStream({
+    start: function start() {
+      var _this = this;
+
+      return exports.get(path, { create: true, overwrite: true }).then(function (fileEntry) {
+        return utils.promiseCall(fileEntry, 'createWriter');
+      }).then(function (fileWriter) {
+        _this.fileWriter = fileWriter;
+        if (options.append) {
+          fileWriter.seek(fileWriter.length);
+        }
+      });
+    },
+    write: function write(data) {
+      var _this2 = this;
+
+      return new Promise(function (resolve, reject) {
+        var blob = new Blob([data], { type: getMimeTypeByData(data) });
+        _this2.fileWriter.onwriteend = resolve;
+        _this2.fileWriter.onerror = reject;
+        _this2.fileWriter.write(blob);
+      });
+    },
+    close: function close() {
+      var _this3 = this;
+
+      return new Promise(function (resolve, reject) {
+        _this3.fileWriter.onwriteend = resolve;
+        _this3.fileWriter.onerror = reject;
+        _this3.fileWriter.truncate(_this3.fileWriter.position);
+      });
+    }
   });
 };
 
@@ -729,6 +831,14 @@ function readAs(type, reader, file) {
     default:
       return reader.readAsText(file);
   }
+}
+
+function freezeMutableFile(file) {
+  // I tried different APIs, but they either require reading the
+  // entire Blob into a buffer, or do not (deep) clone the Blob
+  // at all. Response is so far the best I can find.
+
+  return new Response(file).blob();
 }
 
 function createChildFile(parent, fileName) {
