@@ -36,4 +36,10 @@ describe('copy', function () {
       .then(() => assert.eventually.equal(fs.readFile('b/a.txt'), 'abc'))
   });
 
+  it('should throw error for non-existing file', async () => {
+    await assertThrowsAsync(() => fs.copy('a.txt', 'b.txt'),
+    'A requested file or directory could not be found at the time an operation was processed. Call: getFile(["a.txt",{"create":false}])'
+    );
+  });
+
 });

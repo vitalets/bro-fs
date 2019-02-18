@@ -53,14 +53,10 @@ describe('read file', function () {
       .then(res => assert.equal(res, 'abc'));
   });
 
-  it('should reject on non-existing file', function() {
-    return Promise.resolve()
-      .then(() => fs.readFile('a.txt'))
-      .catch(e => {
-        assert.equal(e.name, 'NotFoundError');
-        assert.include(e.message, 'a.txt');
-        assert.include(e.stack, 'a.txt');
-      })
+  it('should reject on non-existing file', async () => {
+    await assertThrowsAsync(() => fs.readFile('a.txt'),
+      'A requested file or directory could not be found at the time an operation was processed. Call: getFile(["a.txt",{"create":false}])'
+    );
   });
 
   it('should read from entry', function() {

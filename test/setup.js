@@ -8,3 +8,13 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-shallow-deep-equal'));
 
 window.assert = chai.assert;
+window.assertThrowsAsync = async (fn, regExp) => {
+  let f = () => {};
+  try {
+    await fn();
+  } catch(e) {
+    f = () => {throw e};
+  } finally {
+    assert.throws(f, regExp);
+  }
+};

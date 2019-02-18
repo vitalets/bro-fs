@@ -45,4 +45,18 @@ describe('rename', function () {
       .then(() => assert.eventually.equal(fs.readFile('b/a.txt'), 'abc'))
   });
 
+  it('should throw error for non-existing file', async () => {
+    await assertThrowsAsync(() => fs.rename('a.txt', 'b.txt'),
+      'A requested file or directory could not be found at the time an operation was processed. Call: getFile(["a.txt",{"create":false}])'
+    );
+  });
+
+  it('should overwrite existing file', async () => {
+    await fs.writeFile('a.txt', 'abc');
+    await fs.writeFile('b.txt', 'bcd');
+    await fs.rename('a.txt', 'b.txt');
+    assert.notOk(await fs.exists('a.txt'));
+    assert.equal(await fs.readFile('b.txt'), 'abc');
+  });
+
 });

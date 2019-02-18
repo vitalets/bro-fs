@@ -53,12 +53,9 @@ describe('stat', function () {
       }))
   });
 
-  it('should reject for missing entry', function() {
-    return Promise.resolve()
-      .then(() => fs.stat('a.txt'))
-      .catch(e => {
-        assert.equal(e.name, 'NotFoundError');
-      });
+  it('should throw error for missing entry', async () => {
+    await assertThrowsAsync(() => fs.stat('a.txt'),
+      'A requested file or directory could not be found at the time an operation was processed. Call: getFile(["a.txt",{"create":false}])'
+    );
   });
-
 });

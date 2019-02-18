@@ -70,6 +70,8 @@ exports.getRoot = function () {
  * - `options.type='Blob'` returns a immutable snapshot of the file. Slower but safer.
  * - `options.type='File'` returns a mutable instance of {@link https://developer.mozilla.org/en-US/docs/Web/API/File File}. Faster but may have a data race.
  *
+ * If file does not exist - error thrown.
+ *
  * @param {String|FileSystemFileEntry} path
  * @param {Object} [options]
  * @param {String} [options.type='Text'] how content should be read: Text|ArrayBuffer|BinaryString|DataURL|Blob|File
@@ -81,7 +83,9 @@ exports.readFile = function (path, options = {}) {
 };
 
 /**
- * Writes data to file
+ * Writes data to file.
+ * If file does not exist - it will be created.
+ * If file already exists - it will be overwritten.
  *
  * @param {String} path
  * @param {String|Blob|File|ArrayBuffer} data
@@ -93,7 +97,8 @@ exports.writeFile = function (path, data) {
 };
 
 /**
- * Appends data to file
+ * Appends data to file.
+ * If file does not exist - it will be created.
  *
  * @param {String|FileSystemFileEntry} path
  * @param {String|Blob|File|ArrayBuffer} data
@@ -105,7 +110,8 @@ exports.appendFile = function (path, data) {
 };
 
 /**
- * Removes file
+ * Removes file.
+ * If file does not exist - no error thrown.
  *
  * @param {String|FileSystemFileEntry} path
  * @returns {Promise}
@@ -121,7 +127,9 @@ exports.unlink = function (path) {
 };
 
 /**
- * Renames file or directory
+ * Renames file or directory.
+ * If source file or directory does not exist - error thrown.
+ * If target already exists - it will be overwritten.
  *
  * @param {String|FileSystemEntry} oldPath
  * @param {String} newPath
@@ -134,7 +142,8 @@ exports.rename = function (oldPath, newPath, options = {}) {
 };
 
 /**
- * Copies file or directory
+ * Copies file or entire directory.
+ * If file or directory does not exist - error thrown.
  *
  * @param {String|FileSystemEntry} oldPath
  * @param {String} newPath
@@ -147,7 +156,8 @@ exports.copy = function (oldPath, newPath, options = {}) {
 };
 
 /**
- * Removes directory recursively
+ * Removes directory recursively.
+ * If directory does not exist - method does nothing without error.
  *
  * @param {String|FileSystemDirectoryEntry} path
  * @returns {Promise}
@@ -165,7 +175,7 @@ exports.rmdir = function (path) {
 };
 
 /**
- * Creates new directory. If directory already exists - it will not be overwritten.
+ * Recursively creates required directories in provided path.
  *
  * @param {String} path
  * @returns {Promise<FileSystemDirectoryEntry>}
@@ -175,7 +185,7 @@ exports.mkdir = function (path) {
 };
 
 /**
- * Checks that file or directory exists by provided path
+ * Checks that file or directory exists by provided path.
  *
  * @param {String} path
  * @returns {Promise<Boolean>}
@@ -189,7 +199,8 @@ exports.exists = function (path) {
 };
 
 /**
- * Gets info about file or directory
+ * Gets info about file or directory.
+ * If it does not exist - error thrown.
  *
  * @param {String|FileSystemEntry} path
  * @returns {Promise<StatObject>}
