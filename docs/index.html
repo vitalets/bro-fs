@@ -13,6 +13,7 @@
     <![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/prettify.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -39,6 +40,11 @@
     
 
 
+    <section class="package">
+        <h3> </h3>		
+    </section>
+
+
 
 
 
@@ -49,28 +55,40 @@
     
 
 
+
     <section class="readme">
-        <article><h1>bro-fs</h1><p><a href="https://travis-ci.org/vitalets/bro-fs"><img src="https://travis-ci.org/vitalets/bro-fs.svg?branch=master" alt="Build Status"></a>
+        <article><h1>bro-fs</h1>
+<p><a href="https://travis-ci.org/vitalets/bro-fs"><img src="https://travis-ci.org/vitalets/bro-fs.svg?branch=master" alt="Build Status"></a>
 <a href="https://saucelabs.com/u/browserfilesystem"><img src="https://saucelabs.com/buildstatus/browserfilesystem" alt="Sauce Test Status"></a>
 <a href="https://www.npmjs.com/package/bro-fs"><img src="https://img.shields.io/npm/v/bro-fs.svg" alt="npm"></a>
 <a href="https://www.npmjs.com/package/bro-fs"><img src="https://img.shields.io/npm/l/bro-fs.svg" alt="license"></a></p>
 <p>Promise-based wrapper over <a href="https://dev.w3.org/2009/dap/file-system/file-dir-sys.html">HTML5 Filesystem API</a>
-allowing to work with sandboxed filesystem in browser.<br>API is similar to <a href="https://nodejs.org/api/fs.html">Node.js fs module</a> with some extra sugar.
-Currently it is supported <a href="https://developer.mozilla.org/en-US/docs/Web/API/FileSystem#Browser_compatibility">only by Chrome</a>. </p>
-<p>Tested in:<br><a href="https://saucelabs.com/u/browserfilesystem"><img src="https://saucelabs.com/browser-matrix/browserfilesystem.svg" alt="Sauce Test Status"></a></p>
-<h2>Demos</h2><ul>
+allowing to work with sandboxed filesystem in browser.<br>
+API is similar to <a href="https://nodejs.org/api/fs.html">Node.js fs module</a> with some extra sugar.
+Currently it is supported <a href="https://developer.mozilla.org/en-US/docs/Web/API/FileSystem#Browser_compatibility">only by Chrome</a>.</p>
+<p>Tested in:<br>
+<a href="https://saucelabs.com/u/browserfilesystem"><img src="https://saucelabs.com/browser-matrix/browserfilesystem.svg" alt="Sauce Test Status"></a></p>
+<h2>Demos</h2>
+<ul>
 <li><a href="https://vitalets.github.io/bro-fs/demo/">Live Demo</a></li>
 <li><a href="https://jsfiddle.net/na0m8om8/3/">jsFiddle</a></li>
 </ul>
-<h2>API</h2><ul>
+<h2>API</h2>
+<ul>
 <li><a href="https://vitalets.github.io/bro-fs/">API Documentaion</a></li>
 </ul>
-<h2>Install</h2><ul>
-<li>install from npm:<pre class="prettyprint source lang-bash"><code>  npm install bro-fs</code></pre></li>
-<li>include directly from CDN via <code>&lt;script&gt;</code> tag:<pre class="prettyprint source lang-html"><code>  &lt;script src=&quot;https://unpkg.com/bro-fs&quot;>&lt;/script></code></pre></li>
-<li>download manually the <a href="(https://github.com/vitalets/bro-fs/releases/latest">latest release</a>)</li>
+<h2>Install</h2>
+<ul>
+<li>install from npm:<pre class="prettyprint source lang-bash"><code>npm install bro-fs
+</code></pre>
+</li>
+<li>include directly from CDN via <code>&lt;script&gt;</code> tag:<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://unpkg.com/bro-fs&quot;>&lt;/script>
+</code></pre>
+</li>
+<li>download manually the <a href="(https://github.com/vitalets/bro-fs/releases/latest)">latest release</a></li>
 </ul>
-<h2>Usage</h2><p>With <code>async/await</code>:</p>
+<h2>Usage</h2>
+<p>With <code>async/await</code>:</p>
 <pre class="prettyprint source lang-js"><code>const fs = require('bro-fs');
 
 (async function () {
@@ -79,26 +97,32 @@ Currently it is supported <a href="https://developer.mozilla.org/en-US/docs/Web/
   await fs.writeFile('dir/file.txt', 'hello world');
   const content = await fs.readFile('dir/file.txt');
   console.log(content); // => &quot;hello world&quot;
-})();</code></pre><p>or with <code>.then()</code>:</p>
+})();
+</code></pre>
+<p>or with <code>.then()</code>:</p>
 <pre class="prettyprint source lang-js"><code>fs.init({type: window.TEMPORARY, bytes: 5 * 1024 * 1024})
   .then(() => fs.mkdir('dir'))
   .then(() => fs.writeFile('dir/file.txt', 'hello world'))
   .then(() => fs.readFile('dir/file.txt'))
-  .then(content => console.log(content)); // => &quot;hello world&quot;</code></pre><p>See more usage examples in <a href="/test">test directory</a>.</p>
-<h2>W3C Specs</h2><p>Current:  </p>
+  .then(content => console.log(content)); // => &quot;hello world&quot;
+</code></pre>
+<p>See more usage examples in <a href="/test">test directory</a>.</p>
+<h2>W3C Specs</h2>
+<p>Current:</p>
 <ul>
 <li><a href="https://dev.w3.org/2009/dap/file-system/file-dir-sys.html">https://dev.w3.org/2009/dap/file-system/file-dir-sys.html</a> (Chrome)</li>
 <li><a href="https://wicg.github.io/entries-api">https://wicg.github.io/entries-api</a> (Firefox and Edge)</li>
 </ul>
-<p>Coming (draft):  </p>
+<p>Coming (draft):</p>
 <ul>
 <li><a href="https://w3c.github.io/filesystem-api">https://w3c.github.io/filesystem-api</a></li>
 </ul>
-<p>Discussion:  </p>
+<p>Discussion:</p>
 <ul>
 <li><a href="https://github.com/w3c/filesystem-api/issues/8">https://github.com/w3c/filesystem-api/issues/8</a></li>
 </ul>
-<h2>Similar packages</h2><ul>
+<h2>Similar packages</h2>
+<ul>
 <li><a href="https://www.npmjs.com/package/filer.js">filer.js</a> - unix-like commands, callbacks</li>
 <li><a href="https://github.com/evanshortiss/html5-fs">html5-fs</a> - looks obsolete, callbacks</li>
 <li><a href="https://github.com/summera/chromestore.js">chromestore.js</a> - looks obsolete, callbacks</li>
@@ -109,7 +133,8 @@ Currently it is supported <a href="https://developer.mozilla.org/en-US/docs/Web/
 <li><a href="https://github.com/CrabDude/fs-browserify">fs-browserify</a> - abandoned</li>
 <li><a href="https://www.npmjs.com/package/dom-fs">dom-fs</a> - abandoned</li>
 </ul>
-<h2>License</h2><p>MIT @ <a href="https://github.com/vitalets">Vitaliy Potapov</a></p></article>
+<h2>License</h2>
+<p>MIT @ <a href="https://github.com/vitalets">Vitaliy Potapov</a></p></article>
     </section>
 
 
@@ -124,11 +149,13 @@ Currently it is supported <a href="https://developer.mozilla.org/en-US/docs/Web/
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
 <script src="scripts/linenumber.js"></script>
+
 
 
 </body>
