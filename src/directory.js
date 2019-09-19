@@ -37,11 +37,13 @@ exports.get = function (path, options = {}) {
 
 /**
  * Reads dir entries
- *
+ * Note: readEntries returns maximum 100 files. To get all entries method should be called recursively
+ * until empty array returned.
+ * @see https://stackoverflow.com/questions/23823548/maximum-files-of-a-directory-that-can-be-read-by-filereaderreadentries-in-javas
  * @param {Object} dir
  */
 exports.read = function (dir) {
-  return utils.promiseCall(dir.createReader(), 'readEntries')
+  return readEntriesRecursive(dir.createReader(), []);
 };
 
 /**
@@ -71,4 +73,9 @@ function createChildDir(parent, dirName) {
 
 function getChildDir(parent, dirName) {
   return utils.promiseCall(parent, 'getDirectory', dirName, {create: false});
+}
+
+function readEntriesRecursive(reader, acc) {
+  return utils.promiseCall(reader, 'readEntries')
+    .then(entries => entries.length ? readEntriesRecursive(reader, acc.concat(entries)) : acc);
 }

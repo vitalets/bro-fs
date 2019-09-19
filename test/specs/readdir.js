@@ -72,4 +72,11 @@ describe('readdir', function () {
       ]));
   });
 
+  it('should return more than 100 files (#10)', async () => {
+    for (let i = 0; i < 210; i++) {
+      await fs.writeFile(`${i}.txt`, 'abc')
+    }
+    const entries = await fs.readdir('/');
+    assert.equal(entries.length, 210);
+  });
 });
