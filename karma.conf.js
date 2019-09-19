@@ -32,6 +32,7 @@ module.exports = function (config) {
       'test/**': ['webpack', 'sourcemap']
     },
     webpack: {
+      mode: 'development',
       devtool: 'inline-source-map',
       resolve: {
         alias: {

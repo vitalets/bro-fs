@@ -31,11 +31,11 @@ exports.isSupported = function () {
  * @returns {Promise}
  */
 exports.init = function (options = {}) {
-  const type = options.hasOwnProperty('type') ? options.type : window.PERSISTENT;
+  const type = Object.prototype.hasOwnProperty.call(options, 'type') ? options.type : window.PERSISTENT;
   const bytes = options.bytes || 1024 * 1024;
   assertType(type);
   const shouldRequestQuota = type === window.PERSISTENT
-    ? (options.hasOwnProperty('requestQuota') ? options.requestQuota : true)
+    ? (Object.prototype.hasOwnProperty.call(options, 'requestQuota') ? options.requestQuota : true)
     : false;
   return Promise.resolve()
     .then(() => shouldRequestQuota ? quota.requestPersistent(bytes) : bytes)

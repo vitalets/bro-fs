@@ -7,6 +7,7 @@ const outDir = process.env.RUNTYPER ? 'dist-runtyper' : 'dist';
 const outFile = `bro-fs${process.env.NODE_ENV === 'production' ? '.min' : ''}.js`;
 
 module.exports = {
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: './src',
   output: {
     path: path.resolve(outDir),
@@ -23,7 +24,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env'],
+            presets: ['@babel/preset-env'],
             plugins: process.env.RUNTYPER ? [
               ['babel-plugin-runtyper', {
                 warnLevel: 'break',
